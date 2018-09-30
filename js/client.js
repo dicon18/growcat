@@ -13,7 +13,7 @@ Client.askNewPlayer = function(){
 
 //  단순한 좌표(click 레이블) 보내기
 Client.sendClick = function(x,y){
-  Client.socket.emit('click',{x:x,y:y});
+    Client.socket.emit('click',{x:x,y:y});
 };
 
 Client.socket.on('newplayer',function(data){

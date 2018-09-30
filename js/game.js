@@ -7,27 +7,35 @@ Game.init = function() {
     game.stage.disableVisibilityChange = true;
 };
 
+//  이미지 불러오기
 Game.preload = function() {
-    //  이미지 불러오기
+    game.load.tilemap('map', 'assets/map/example_map.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.spritesheet('tileset', 'assets/map/tilesheet.png', 32, 32);
     game.load.image('pacman', 'assets/sprites/pacman.png');
 };
 
 Game.create = function() {
+    //  배경색
+    game.stage.backgroundColor = 'ffdead';
+
     //  게임 맵 생성
     Game.playerMap = {};
-
-    //var layer;
-    
+    var map = game.add.tilemap('map');
+    map.addTilesetImage('tilesheet', 'tileset');
+    var layer;
+    for (let i = 0; i < map.layers.length; i++) {
+        layer = map.createLayer(i);
+    }
     //  클릭
-    //inputEnabled = true;
-    //events.onInputUp.add(Game.getCoordinates, this);
+    layer.inputEnabled = true;
+    layer.events.onInputUp.add(Game.getCoordinates, this);
 
     // 서버
     Client.askNewPlayer();
 };
 
+//  클라이언트에 좌표 전송
 Game.getCoordinates = function(layer, pointer) {
-    //  클라이언트에 좌표 전송
     Client.sendClick(pointer.worldX, pointer.worldY);
 };
 
@@ -51,3 +59,8 @@ Game.removePlayer = function(id) {
     Game.playerMap[id].destroy();
     delete Game.playerMap[id]; 
 };
+
+//  랜더링
+Game.render() = function() {
+
+}
