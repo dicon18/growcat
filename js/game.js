@@ -26,6 +26,7 @@ Game.create = function() {
     for (let i = 0; i < map.layers.length; i++) {
         layer = map.createLayer(i);
     }
+    
     //  클릭
     layer.inputEnabled = true;
     layer.events.onInputUp.add(Game.getCoordinates, this);
