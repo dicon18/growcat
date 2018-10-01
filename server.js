@@ -2,6 +2,8 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
+
+//  서버 객체 수신
 var io = require('socket.io').listen(server);
 
 app.use('/js',express.static(__dirname + '/js'));
@@ -20,17 +22,20 @@ server.listen(process.env.PORT || 8081,function(){
 io.on('connection',function(socket){
 	//	플레이어에게 ID부여 및 임의 좌표 지정
     socket.on('newplayer',function(){
+        console.log('a user connected');
         socket.player = {
             id: server.lastPlayderID++,
             x: randomInt(100,400),
             y: randomInt(100,400)
         };
-        //	플레이어간 연결
+        ///	서버 -> 클라이언트 소켓
         socket.emit('allplayers',getAllPlayers());
 
-        //	연결된 모든 소켓에 메시지 전송 및 플레이어 객체 데이터 전송
+        /// 나를 제외한 다른 클라이언트 소켓들에게 이벤트 전송
         socket.broadcast.emit('newplayer',socket.player);
 
+        /// 클라이언트 소켓 -> 서버
+        //  클릭 이벤트 받기
         socket.on('click',function(data){
             console.log('click to '+data.x+', '+data.y);
             socket.player.x = data.x;
@@ -40,6 +45,7 @@ io.on('connection',function(socket){
 
         //	연결 끊기
         socket.on('disconnect',function(){
+            console('user disconnect');
             io.emit('remove',socket.player.id);
         });
     });

@@ -1,4 +1,4 @@
-/// 게임 클라이언트 인터페이스
+/// 게임 클라이언트 소켓(인터페이스)
 var Client = {};
 Client.socket = io.connect();
 
