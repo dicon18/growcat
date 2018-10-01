@@ -14,19 +14,29 @@ Game.preload = function() {
     game.load.image('pacman', 'assets/sprites/pacman.png');
 };
 
+//  키 입력 선언
+var key_left, key_right, key_up, key_down;
+
+//  설정 변수
+var speed;
+
+
 Game.create = function() {
+    //  키 세팅
+    this.key_left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    this.key_right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    this.key_up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    this.key_down = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+
+    //  속도
+    this.speed = 4;
+
     /// 게임 맵 생성
     //  배경색
     Game.stage.backgroundColor = 'ffdead';
 
-    // 타일추가
+    //  다중 플레이어 관리
     Game.playerMap = {};
-    var map = game.add.tilemap('map');
-    map.addTilesetImage('tilesheet', 'tileset');
-    var layer;
-    for (let i = 0; i < map.layers.length; i++) {
-        layer = map.createLayer(i);
-    }
     
     //  월드 사이즈
     //game.world.setBounds(-1000, -1000, 1000, 1000);
@@ -35,9 +45,17 @@ Game.create = function() {
     Client.askNewPlayer();
 };
 
-//  클라이언트에 좌표 전송
-Game.getCoordinates = function(layer, pointer) {
-    Client.sendClick(pointer.worldX, pointer.worldY);
+Game.update = function() {
+    //  움직이기
+    Game.getCoordinates();
+}
+
+//  클라이언트 소켓에 좌표 전송
+Game.getCoordinates = function() {
+    let x = (this.key_right.isDown - this.key_left.isDown) * this.speed;
+    let y = (this.key_down.isDown - this.key_up.isDown) * this.speed;
+    //console.log((this.key_right.isDown - this.key_left.isDown) * this.speed);
+    Client.sendClick(x, y);
 };
 
 //  객체 생성
@@ -48,11 +66,8 @@ Game.addNewPlayer = function(id, x, y) {
 //  객체 이동
 Game.movePlayer = function(id, x, y) {
     var player = Game.playerMap[id];
-    var distance = Phaser.Math.distance(player.x, player.y, x, y);
-    var tween = game.add.tween(player);
-    var duration = distance * 10;
-    tween.to({x:x,y:y}, duration);
-    tween.start();
+    player.x += x;
+    player.y += y;
 };
 
 //  객체 제거
@@ -60,6 +75,7 @@ Game.removePlayer = function(id) {
     Game.playerMap[id].destroy();
     delete Game.playerMap[id]; 
 };
+
 
 //  랜더링
 Game.render = function() {

@@ -37,15 +37,15 @@ io.on('connection',function(socket){
         /// on(수신)
         //  클릭 이벤트 받기
         socket.on('click',function(data){
-            console.log('click to '+data.x+', '+data.y);
             socket.player.x = data.x;
             socket.player.y = data.y;
+            //console.log('x:'+data.x+' y:'+data.y);
             io.emit('move',socket.player);
         });
 
         //	연결 끊기
         socket.on('disconnect',function(){
-            console('user disconnect');
+            console.log('user disconnect');
             io.emit('remove',socket.player.id);
         });
     });
