@@ -17,7 +17,7 @@ Game.preload = function() {
 Game.create = function() {
     /// 게임 맵 생성
     //  배경색
-    game.stage.backgroundColor = 'ffdead';
+    Game.stage.backgroundColor = 'ffdead';
 
     // 타일추가
     Game.playerMap = {};
@@ -29,11 +29,7 @@ Game.create = function() {
     }
     
     //  월드 사이즈
-    game.world.setBounds(-1000, -1000, 1000, 1000);
-
-    //  클릭
-    layer.inputEnabled = true;
-    layer.events.onInputUp.add(Game.getCoordinates, this);
+    //game.world.setBounds(-1000, -1000, 1000, 1000);
 
     // 서버
     Client.askNewPlayer();
@@ -68,5 +64,5 @@ Game.removePlayer = function(id) {
 //  랜더링
 Game.render = function() {
     //  디버깅
-    game.debug.cameraInfo(game.camera, 32, 32);
+    //game.debug.cameraInfo(game.camera, 32, 32);
 };

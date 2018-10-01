@@ -28,13 +28,13 @@ io.on('connection',function(socket){
             x: randomInt(100,400),
             y: randomInt(100,400)
         };
-        ///	서버 -> 클라이언트 소켓
+        /// emit(송신)
         socket.emit('allplayers',getAllPlayers());
 
         /// 나를 제외한 다른 클라이언트 소켓들에게 이벤트 전송
         socket.broadcast.emit('newplayer',socket.player);
 
-        /// 클라이언트 소켓 -> 서버
+        /// on(수신)
         //  클릭 이벤트 받기
         socket.on('click',function(data){
             console.log('click to '+data.x+', '+data.y);

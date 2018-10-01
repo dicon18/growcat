@@ -3,7 +3,7 @@ var Client = {};
 Client.socket = io.connect();
 
 Client.sendTest = function(){
-    console.log("test sent");
+    //  emit(송신) 
     Client.socket.emit('test');
 };
 
@@ -16,6 +16,7 @@ Client.sendClick = function(x,y){
     Client.socket.emit('click',{x:x,y:y});
 };
 
+/// on(수신)
 Client.socket.on('newplayer',function(data){
     Game.addNewPlayer(data.id,data.x,data.y);
 });
