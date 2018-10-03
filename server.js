@@ -13,6 +13,10 @@ app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
 });
 
+// var game = {
+//     playerList = [];
+// }
+
 server.lastPlayderID = 0;
 
 server.listen(process.env.PORT || 8081,function(){
@@ -37,10 +41,12 @@ io.on('connection',function(socket){
         /// on(수신)
         //  클릭 이벤트 받기
         socket.on('click',function(data){
-            socket.player.x = data.x;
-            socket.player.y = data.y;
+            socket.player.x += data.x;
+            socket.player.y += data.y;
             //console.log('x:'+data.x+' y:'+data.y);
             io.emit('move',socket.player);
+
+            console.log(socket.player);
         });
 
         //  연결 끊기
@@ -60,6 +66,7 @@ function getAllPlayers(){
     var players = [];
     Object.keys(io.sockets.connected).forEach(function(socketID){
         var player = io.sockets.connected[socketID].player;
+        console.log(player);
         if(player) players.push(player);
     });
     return players;

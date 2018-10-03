@@ -67,8 +67,8 @@ Game.addNewPlayer = function(id, x, y) {
 //  객체 이동
 Game.movePlayer = function(id, x, y) {
     var player = Game.playerMap[id];
-    player.x += x;
-    player.y += y;
+    player.x = x;
+    player.y = y;
 };
 
 //  객체 제거
