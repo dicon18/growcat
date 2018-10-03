@@ -1,6 +1,9 @@
 /// 게임 클라이언트
-//  게임 해상도 
+var game = new Phaser.Game(800, 600, Phaser.AUTO)
+
 var Game = {};
+game.state.add('Game', Game);
+
 
 Game.init = function() {
     //  게임창에 포커스가 없어도 반응
@@ -9,8 +12,6 @@ Game.init = function() {
 
 //  이미지 불러오기
 Game.preload = function() {
-    game.load.tilemap('map', 'assets/map/example_map.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.spritesheet('tileset', 'assets/map/tilesheet.png', 32, 32);
     game.load.image('pacman', 'assets/sprites/pacman.png');
 };
 
@@ -33,7 +34,7 @@ Game.create = function() {
 
     /// 게임 맵 생성
     //  배경색
-    Game.stage.backgroundColor = 'ffdead';
+    Game.stage.backgroundColor = 'cccccc';
 
     //  다중 플레이어 관리
     Game.playerMap = {};
@@ -76,9 +77,12 @@ Game.removePlayer = function(id) {
     delete Game.playerMap[id]; 
 };
 
-
 //  랜더링
 Game.render = function() {
     //  디버깅
     //game.debug.cameraInfo(game.camera, 32, 32);
 };
+
+
+//  룸 시작
+game.state.start('Game'); 

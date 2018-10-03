@@ -1,4 +1,4 @@
-///	게임 서버
+/// 게임 서버
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -20,7 +20,7 @@ server.listen(process.env.PORT || 8081,function(){
 });
 
 io.on('connection',function(socket){
-	//	플레이어에게 ID부여 및 임의 좌표 지정
+    //  플레이어에게 ID부여 및 임의 좌표 지정
     socket.on('newplayer',function(){
         console.log('a user connected');
         socket.player = {
@@ -43,7 +43,7 @@ io.on('connection',function(socket){
             io.emit('move',socket.player);
         });
 
-        //	연결 끊기
+        //  연결 끊기
         socket.on('disconnect',function(){
             console.log('user disconnect');
             io.emit('remove',socket.player.id);
@@ -55,7 +55,7 @@ io.on('connection',function(socket){
     });
 });
 
-//	모든 소켓 반복처리
+//  모든 소켓 반복처리
 function getAllPlayers(){
     var players = [];
     Object.keys(io.sockets.connected).forEach(function(socketID){
