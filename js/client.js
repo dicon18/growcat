@@ -9,14 +9,18 @@ Client.newPlayer = function(){
     Client.socket.emit('newplayer');
 };
 
-Client.newUnit = function(unitName){
-    Client.socket.emit('newUnit', unitName)
+Client.newUnit = function(unitSprite){
+    Client.socket.emit('newUnit', unitSprite)
 }
 
 ///======================================================================
 /// 수신
-Client.socket.on('newplayer',function(data){
+Client.socket.on('addplayer',function(data){
     Game.addPlayer(data.id,data.unitList);
+});
+
+Client.socket.on('addUnit',function(data){
+    Game.addUnit(data.id,data.x,data.y,data.sprite);
 });
 
 Client.socket.on('getAllplayers',function(data){

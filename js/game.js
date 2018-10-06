@@ -31,7 +31,7 @@ Game.create = function() {
     Game.unitList = {};
 
     //  버튼 추가
-    this.button = Game.add.button(100, 300, 'bt_unit1');
+    this.button = Game.add.button(100, 500, 'bt_unit1');
     this.button.onInputDown.add(function() {
         Client.newUnit('pacman')
     });
@@ -41,7 +41,9 @@ Game.create = function() {
 };
 
 Game.update = function() {
-
+    for (let i in Game.unitList) {
+        Game.unitList[i].x++;
+    }
 }
 
 Game.addPlayer = function(id,unitList){
@@ -49,8 +51,8 @@ Game.addPlayer = function(id,unitList){
     Game.unitList = unitList;
 };
 
-Game.addUnit = function(id, x, y, unit) {
-    Game.unitList[id] = game.add.sprite(x, y, unit);
+Game.addUnit = function(id, x, y, sprite) {
+    Game.unitList[id] = game.add.sprite(x, y, sprite);
 };
 
 Game.removeUnit = function(id) {

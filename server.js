@@ -13,41 +13,27 @@ app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
 });
 
-// var game = {
-//     playerList = [];
-// }
-
-server.lastPlayderID = 0;
-
 server.listen(process.env.PORT || 8081,function(){
     console.log('Listening on '+server.address().port);
 });
 
+
+server.lastPlayderID = 0;
+server.lastUnitID = 0;
+
 io.on('connection',function(socket){
-    //  플레이어에게 ID부여 및 임의 좌표 지정
     socket.on('newplayer',function(){
-        console.log('a user connected');
+        //  새로운 플레이어
         socket.player = {
             id: server.lastPlayderID++,
-            x: randomInt(100,400),
-            y: randomInt(100,400)
+            unitList: []
         };
-        /// emit(송신)
-        socket.emit('allplayers',getAllPlayers());
 
-        /// 나를 제외한 다른 클라이언트 소켓들에게 이벤트 전송
-        socket.broadcast.emit('newplayer',socket.player);
+        //  내 정보 전송
+        socket.broadcast.emit('addplayer',socket.player);
 
-        /// on(수신)
-        //  클릭 이벤트 받기
-        socket.on('click',function(data){
-            socket.player.x += data.x;
-            socket.player.y += data.y;
-            //console.log('x:'+data.x+' y:'+data.y);
-            io.emit('move',socket.player);
-
-            console.log(socket.player);
-        });
+        //  update
+        socket.emit('getAllplayers',getAllPlayers());
 
         //  연결 끊기
         socket.on('disconnect',function(){
@@ -56,22 +42,32 @@ io.on('connection',function(socket){
         });
     });
 
-    socket.on('test',function(){
-        console.log('test received');
+    //  새로운 유닛
+    socket.on('newUnit', function(unitSprite){
+        console.log(unitSprite);
+        socket.player.unitList[server.lastUnitID] = {
+            id: server.lastUnitID,
+            sprite: unitSprite,
+            x: 100,
+            y: 300
+        }
+        io.emit('addUnit', socket.player.unitList[server.lastUnitID++]);
     });
 });
 
-//  모든 소켓 반복처리
+/// 모든 플레이어 정보 반환
 function getAllPlayers(){
     var players = [];
     Object.keys(io.sockets.connected).forEach(function(socketID){
         var player = io.sockets.connected[socketID].player;
-        console.log(player);
+        //console.log(player);
         if(player) players.push(player);
     });
     return players;
 }
 
+/// Utility
+//  random_range
 function randomInt (low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }
