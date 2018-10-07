@@ -5,51 +5,48 @@ Client.socket = io();
 
 ///======================================================================
 //  송신
-Client.newPlayer = function(){
+Client.newPlayer = function() {
     Client.socket.emit('newplayer');
 };
 
-Client.newUnit = function(unitSprite){
+Client.newUnit = function(unitSprite) {
     Client.socket.emit('newUnit', unitSprite)
 }
 
 ///======================================================================
 //  수신
 /// 생성
-Client.socket.on('addplayer',function(data){
+Client.socket.on('addplayer', function(data) {
     Game.addPlayer(data.id, data.hp, data.money, data.unitList);
-    console.log('add player');
 });
 
 Client.socket.on('myId', function(id) {
     Game.myId = id;
-    console.log(Game.myId);
 });
 
-Client.socket.on('getAllplayers',function(data){
-    console.log(data.length);
-    console.log(data[0].unitList.length);
-    for(var i = 0; i < data.length; i++) {
-        var p = data[i];
-        console.log('@');
+Client.socket.on('getAllplayers', function(data) {
+    for (var i = 0; i < data.length; i++) {
+        //  플레이어 리스트 정보 가져오기
+        Game.players[data[i].id] = data[i];
+
         for (var j = 0; j < data[i].unitList.length; j++) {
-            let u = p.unitList[i];
+            //  유닛 생성
+            let u = data[i].unitList[j];
             Game.addUnit(u.iid, u.id, u.x, u.y, u.sprite);
-            console.log('!');
         }
     }
 
     //  연결 끊기
-    Client.socket.on('disconnect',function(socketID){
+    Client.socket.on('disconnect', function(socketID) {
         Game.disconnect(socketID);
     });
 
-    Client.socket.on('remove',function(unitID){
-        Game.removeUnit(unitID);
+    Client.socket.on('remove', function(socketID) {
+        Game.removeUnit(socketID);
     });
 });
 
 /// update
-Client.socket.on('addUnit',function(data){
+Client.socket.on('addUnit', function(data){
     Game.addUnit(data.iid, data.id, data.x, data.y, data.sprite);
 });

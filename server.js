@@ -17,13 +17,17 @@ server.listen(process.env.PORT || 8081,function(){
     console.log('Listening on '+server.address().port);
 });
 
-io.on('connection',function(socket){
+
+//  플레이어 ID 
+server.lastPlayerID = 0;
+
+io.on('connection',function(socket) {
     socket.lastUnitID = 0;
 
-    socket.on('newplayer',function(){
+    socket.on('newplayer',function() {
         //  새로운 플레이어
         socket.player = {
-            id: socket.id,
+            id: server.lastPlayerID,
             hp: 20,
             money: 100,
             unitList: []
@@ -31,45 +35,45 @@ io.on('connection',function(socket){
         console.log('a user connection');
 
         //  내 정보 전송
-        socket.emit('myId',socket.id);
-        io.emit('addplayer',socket.player);
+        socket.emit('myId', server.lastPlayerID++);
+        io.emit('addplayer', socket.player);
 
         //  모든 플레이어 정보 가져오기
-        socket.emit('getAllplayers',getAllPlayers());
+        socket.emit('getAllplayers', getAllPlayers());
     });
 
     //  새로운 유닛
-    socket.on('newUnit', function(unitSprite){
+    socket.on('newUnit', function(unitSprite) {
         socket.player.unitList[socket.lastUnitID] = {
-            iid: socket.id,
+            iid: socket.player.id,
             id: socket.lastUnitID,
-            x: 100,
-            y: 300,
+            x: randomInt(100, 700),
+            y: randomInt(100, 500),
             sprite: unitSprite
         };
-        io.emit('addUnit',socket.player.unitList[socket.lastUnitID++]);
+        io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
     });
 
     //  연결 끊기
-    socket.on('disconnect',function(){
+    socket.on('disconnect', function() {
         console.log('user disconnect');
-        io.emit('disconnect',socket.id);
+        io.emit('disconnect', socket.id);
     });
 });
 
 /// 모든 플레이어 정보 반환
-function getAllPlayers(){
+function getAllPlayers() {
     var playerList = [];
-    Object.keys(io.sockets.connected).forEach(function(socketID){
+    Object.keys(io.sockets.connected).forEach(function(socketID) {
         var player = io.sockets.connected[socketID].player;
         if(player) playerList.push(player);
     });
-    console.log(playerList);
+    console.clear(); console.log(playerList);
     return playerList;
 }
 
 /// Utility
 //  random_range
-function randomInt (low, high) {
+function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }

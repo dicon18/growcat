@@ -12,7 +12,6 @@ Game.init = function() {
     game.stage.disableVisibilityChange = true;
 };
 
-//  이미지 불러오기
 Game.preload = function() {
     game.load.image('BG', 'assets/background/background.png');
     game.load.image('pacman', 'assets/sprites/pacman.png');
@@ -20,9 +19,6 @@ Game.preload = function() {
 };
 
 Game.create = function() {
-    //  게임 설정
-    this.speed = 4;
-
     //  배경색
     BG = Game.add.tileSprite(0, 0, WIDTH, HEIGHT, 'BG');
     Game.stage.backgroundColor = 'cccccc';
@@ -36,51 +32,36 @@ Game.create = function() {
         Client.newUnit('pacman');
     });
 
-    // 서버
     Client.newPlayer();
 };
 
 Game.update = function() {
-    // for (let i in Game.players.unitList) {
-    //     Game.players.unitList[i].x++;
-    // }
+    
 }
 
-Game.addPlayer = function(id, hp, money, unitList){
+Game.addPlayer = function(id, hp, money, unitList) {
     Game.players[id] = {
         hp: hp,
         money: money,
-        unitList: unitList
+        unitList: [unitList]
     };
 };
 
 Game.addUnit = function(iid ,id, x, y, sprite) {
-    Game.players.push({
-        id: id,
-        x: x,
-        y: y,
-        sprite: sprite
-    })
-    Game.players[iid] = game.add.sprite(x, y, sprite);
+    Game.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
 };
 
-Game.removeUnit = function(id) {
-    Game.players[id].unitList.destroy();
-    delete Game.players[id].unitList; 
+Game.removeUnit = function(socketID) {
+    Game.players[socketID].unitList.destroy();
+    delete Game.players[socketID]; 
 };
 
 Game.disconnect = function(socketID) {
-    var playerID = Game.players[socketID];
-    for (let i in playerID.unitList) {
-        playerID.unitList[i].destroy();
-    }
-    delete playerID;
+    Game.removeUnit(socketID);
 }
 
-//  랜더링
 Game.render = function() {
-    //  디버깅
-    //game.debug.cameraInfo(game.camera, 32, 32);
+
 };
 
 ///======================================================================
