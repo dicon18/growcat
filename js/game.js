@@ -1,5 +1,8 @@
+const WIDTH = 800;
+const HEIGHT = 600;
+
 /// 게임 클라이언트
-var game = new Phaser.Game(800, 600, Phaser.AUTO)
+var game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO)
 
 var Game = {};
 game.state.add('Game', Game);
@@ -11,29 +14,27 @@ Game.init = function() {
 
 //  이미지 불러오기
 Game.preload = function() {
+    game.load.image('BG', 'assets/background/background.png');
     game.load.image('pacman', 'assets/sprites/pacman.png');
     game.load.image('bt_unit1', 'assets/sprites/bt_unit1.png');
 };
 
 Game.create = function() {
     //  게임 설정
-    this.key_left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    this.key_right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-    this.key_up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    this.key_down = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     this.speed = 4;
 
     //  배경색
+    BG = Game.add.tileSprite(0, 0, WIDTH, HEIGHT, 'BG');
     Game.stage.backgroundColor = 'cccccc';
 
-    //  관리
-    Game.playerList = {};
-    Game.unitList = {};
+    //  플레이어 리스트
+    Game.players = {};
+    Game.players.unitList = new Array();
 
     //  버튼 추가
     this.button = Game.add.button(100, 500, 'bt_unit1');
     this.button.onInputDown.add(function() {
-        Client.newUnit('pacman')
+        Client.newUnit('pacman');
     });
 
     // 서버
@@ -41,24 +42,35 @@ Game.create = function() {
 };
 
 Game.update = function() {
-    for (let i in Game.unitList) {
-        Game.unitList[i].x++;
-    }
+    // for (let i in Game.players.unitList) {
+    //     Game.players.unitList[i].x++;
+    // }
 }
 
-Game.addPlayer = function(id,unitList){
-    Game.playerList[id] = {id:id};
-    Game.unitList = unitList;
+Game.addPlayer = function(id, hp, money, unitList){
+    Game.players[id] = {
+        hp: hp,
+        money: money,
+        unitList: unitList
+    };
 };
 
-Game.addUnit = function(id, x, y, sprite) {
-    Game.unitList[id] = game.add.sprite(x, y, sprite);
+Game.addUnit = function(iid ,id, x, y, sprite) {
+    Game.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
 };
 
 Game.removeUnit = function(id) {
-    Game.unitList[id].destroy();
-    delete Game.unitList[id]; 
+    Game.players[id].unitList.destroy();
+    delete Game.players[id].unitList; 
 };
+
+Game.disconnect = function(socketID) {
+    var playerID = Game.players[socketID];
+    for (let i in playerID.unitList) {
+        playerID.unitList[i].destroy();
+    }
+    delete playerID;
+}
 
 //  랜더링
 Game.render = function() {
