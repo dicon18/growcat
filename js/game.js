@@ -28,8 +28,7 @@ Game.create = function() {
     Game.stage.backgroundColor = 'cccccc';
 
     //  플레이어 리스트
-    Game.players = {};
-    Game.players.unitList = new Array();
+    Game.players = [];
 
     //  버튼 추가
     this.button = Game.add.button(100, 500, 'bt_unit1');
@@ -56,7 +55,13 @@ Game.addPlayer = function(id, hp, money, unitList){
 };
 
 Game.addUnit = function(iid ,id, x, y, sprite) {
-    Game.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
+    Game.players.push({
+        id: id,
+        x: x,
+        y: y,
+        sprite: sprite
+    })
+    Game.players[iid] = game.add.sprite(x, y, sprite);
 };
 
 Game.removeUnit = function(id) {
