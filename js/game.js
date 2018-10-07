@@ -52,7 +52,9 @@ Game.addUnit = function(iid ,id, x, y, sprite) {
 };
 
 Game.removeUnit = function(socketID) {
-    Game.players[socketID].unitList.destroy();
+    for (var i = 0; i < Game.players[socketID].unitList.length; i++) {
+        Game.players[socketID].unitList[i].destroy();
+    }
     delete Game.players[socketID]; 
 };
 
@@ -63,10 +65,6 @@ Game.disconnect = function(socketID) {
 Game.render = function() {
 
 };
-
-///======================================================================
-//  소켓
-
 
 
 ///======================================================================

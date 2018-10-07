@@ -57,7 +57,7 @@ io.on('connection',function(socket) {
     //  연결 끊기
     socket.on('disconnect', function() {
         console.log('user disconnect');
-        io.emit('disconnect', socket.id);
+        io.emit('disconnect', socket.player.id);
     });
 });
 
@@ -66,7 +66,7 @@ function getAllPlayers() {
     var playerList = [];
     Object.keys(io.sockets.connected).forEach(function(socketID) {
         var player = io.sockets.connected[socketID].player;
-        if(player) playerList.push(player);
+        if (player) playerList.push(player);
     });
     console.clear(); console.log(playerList);
     return playerList;
