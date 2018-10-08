@@ -68,7 +68,7 @@ function getAllPlayers() {
         var player = io.sockets.connected[socketID].player;
         if (player) playerList.push(player);
     });
-    console.clear(); console.log(playerList);
+    console.log(playerList);
     return playerList;
 }
 
