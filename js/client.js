@@ -15,7 +15,6 @@ Client.newUnit = function(unitSprite) {
 
 ///======================================================================
 //  수신
-/// 생성
 Client.socket.on('addplayer', function(data) {
     Game.addPlayer(data.id, data.hp, data.money, data.unitList);
 });

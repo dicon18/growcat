@@ -40,24 +40,24 @@ io.on('connection',function(socket) {
 
         //  모든 플레이어 정보 가져오기
         socket.emit('getAllplayers', getAllPlayers());
-    });
+    
+        //  새로운 유닛
+        socket.on('newUnit', function(unitSprite) {
+            socket.player.unitList[socket.lastUnitID] = {
+                iid: socket.player.id,
+                id: socket.lastUnitID,
+                x: randomInt(100, 700),
+                y: randomInt(100, 500),
+                sprite: unitSprite
+            };
+            io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
+        });
 
-    //  새로운 유닛
-    socket.on('newUnit', function(unitSprite) {
-        socket.player.unitList[socket.lastUnitID] = {
-            iid: socket.player.id,
-            id: socket.lastUnitID,
-            x: randomInt(100, 700),
-            y: randomInt(100, 500),
-            sprite: unitSprite
-        };
-        io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
-    });
-
-    //  연결 끊기
-    socket.on('disconnect', function() {
-        console.log('user disconnect');
-        io.emit('disconnect', socket.player.id);
+        //  연결 끊기
+        socket.on('disconnect', function() {
+            console.log('user disconnect');
+            io.emit('disconnect', socket.player.id);
+        });
     });
 });
 
@@ -72,8 +72,7 @@ function getAllPlayers() {
     return playerList;
 }
 
-/// Utility
-//  random_range
+/// utility
 function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }

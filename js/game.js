@@ -1,8 +1,10 @@
-const WIDTH = 800;
-const HEIGHT = 600;
+const CANVAS_WIDTH = 800//1280;
+const CANVAS_HEIGHT = 600//720;
+const WORLD_WIDTH = 1920;
+const WORLD_HEIGHT = 720;
 
 /// 게임 클라이언트
-var game = new Phaser.Game(WIDTH, HEIGHT, Phaser.AUTO)
+var game = new Phaser.Game(CANVAS_WIDTH, CANVAS_HEIGHT, Phaser.AUTO)
 
 var Game = {};
 game.state.add('Game', Game);
@@ -20,14 +22,17 @@ Game.preload = function() {
 
 Game.create = function() {
     //  배경색
-    BG = Game.add.tileSprite(0, 0, WIDTH, HEIGHT, 'BG');
-    Game.stage.backgroundColor = 'cccccc';
+    BG = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'BG');
+    this.stage.backgroundColor = 'cccccc';
+
+    //  월드 크기
+    this.world.setBounds(0, 0, 1920, 720);
 
     //  플레이어 리스트
-    Game.players = [];
+    this.players = [];
 
     //  버튼 추가
-    this.button = Game.add.button(100, 500, 'bt_unit1');
+    this.button = this.add.button(100, 500, 'bt_unit1');
     this.button.onInputDown.add(function() {
         Client.newUnit('pacman');
     });
@@ -36,11 +41,28 @@ Game.create = function() {
 };
 
 Game.update = function() {
-    
+    this.cameraMov();
 }
 
+Game.render = function() {
+    //  DEBUGER
+    game.debug.cameraInfo(game.camera, 32, 32);
+};
+
+///======================================================================
+//  클라이언트
+Game.cameraMov = function() {
+    var hw = CANVAS_WIDTH / 2;
+    if (game.input.x < hw - hw / 2)
+        game.camera.x -= 4;
+    if (game.input.x > hw + hw / 2)
+        game.camera.x += 4;
+};
+
+///======================================================================
+//  소켓
 Game.addPlayer = function(id, hp, money, unitList) {
-    Game.players[id] = {
+    this.players[id] = {
         hp: hp,
         money: money,
         unitList: [unitList]
@@ -48,24 +70,19 @@ Game.addPlayer = function(id, hp, money, unitList) {
 };
 
 Game.addUnit = function(iid ,id, x, y, sprite) {
-    Game.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
+    this.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
 };
 
 Game.removeUnit = function(socketID) {
-    for (var i = 0; i < Game.players[socketID].unitList.length; i++) {
-        Game.players[socketID].unitList[i].destroy();
+    for (var i = 0; i < this.players[socketID].unitList.length; i++) {
+        this.players[socketID].unitList[i].destroy();
     }
-    delete Game.players[socketID]; 
+    delete this.players[socketID]; 
 };
 
 Game.disconnect = function(socketID) {
-    Game.removeUnit(socketID);
+    this.removeUnit(socketID);
 }
-
-Game.render = function() {
-
-};
-
 
 ///======================================================================
 //  룸 시작
