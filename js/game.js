@@ -9,6 +9,7 @@ var game = new Phaser.Game(CANVAS_WIDTH, CANVAS_HEIGHT, Phaser.AUTO)
 var Game = {};
 game.state.add('Game', Game);
 
+
 Game.init = function() {
     //  게임창에 포커스가 없어도 반응
     game.stage.disableVisibilityChange = true;
@@ -32,16 +33,18 @@ Game.create = function() {
     this.players = [];
 
     //  버튼 추가
-    this.button = this.add.button(100, 500, 'bt_unit1');
-    this.button.onInputDown.add(function() {
+    this.bt_unit1 = this.add.button(100, 500, 'bt_unit1');
+    this.bt_unit1.onInputDown.add(function() {
         Client.newUnit('pacman');
     });
+    this.bt_unit1.fixedToCamera = true;
 
     Client.newPlayer();
 };
 
 Game.update = function() {
     this.cameraMov();
+    this.unitMov();
 }
 
 Game.render = function() {
@@ -49,15 +52,26 @@ Game.render = function() {
     game.debug.cameraInfo(game.camera, 32, 32);
 };
 
+
 ///======================================================================
 //  클라이언트
 Game.cameraMov = function() {
     var hw = CANVAS_WIDTH / 2;
-    if (game.input.x < hw - hw / 2)
-        game.camera.x -= 4;
-    if (game.input.x > hw + hw / 2)
-        game.camera.x += 4;
+    if (game.input.y < (CANVAS_HEIGHT / 3) * 2) {
+        if (game.input.x < hw - hw / 2)
+            game.camera.x -= 6;
+        if (game.input.x > hw + hw / 2)
+            game.camera.x += 6;
+    }
 };
+
+Game.unitMov = function() {
+    for (var i = 0; i < this.players.length; i++) {
+        for (var j = 0; j < this.players[i].unitList.length; j++) {
+                this.players[i].unitList[j].x += 4;
+        }
+    }
+}
 
 ///======================================================================
 //  소켓
@@ -74,7 +88,7 @@ Game.addUnit = function(iid ,id, x, y, sprite) {
 };
 
 Game.removeUnit = function(socketID) {
-    for (var i = 0; i < this.players[socketID].unitList.length; i++) {
+    for (let i = 0; i < this.players[socketID].unitList.length; i++) {
         this.players[socketID].unitList[i].destroy();
     }
     delete this.players[socketID]; 
