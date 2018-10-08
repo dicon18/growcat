@@ -1,10 +1,10 @@
-const CANVAS_WIDTH = 800//1280;
-const CANVAS_HEIGHT = 600//720;
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
 const WORLD_WIDTH = 1920;
 const WORLD_HEIGHT = 720;
 
 /// 게임 클라이언트
-var game = new Phaser.Game(CANVAS_WIDTH, CANVAS_HEIGHT, Phaser.AUTO)
+var game = new Phaser.Game(CANVAS_WIDTH, CANVAS_HEIGHT, Phaser.AUTO);
 
 var Game = {};
 game.state.add('Game', Game);
@@ -28,9 +28,6 @@ Game.create = function() {
 
     //  월드 크기
     this.world.setBounds(0, 0, 1920, 720);
-
-    //  플레이어 리스트
-    this.players = [];
 
     //  버튼 추가
     this.bt_unit1 = this.add.button(100, 500, 'bt_unit1');
@@ -66,20 +63,21 @@ Game.cameraMov = function() {
 };
 
 Game.unitMov = function() {
-    for (var i = 0; i < this.players.length; i++) {
-        for (var j = 0; j < this.players[i].unitList.length; j++) {
-                this.players[i].unitList[j].x += 4;
-        }
-    }
+    // for (var i = 0; i < this.players.length; i++) {
+    //     for (var j = 0; j < this.players[i].unitList.length; j++) {
+    //             this.players[i].unitList[j].x += 4;
+    //     }
+    // }
 }
 
 ///======================================================================
 //  소켓
 Game.addPlayer = function(id, hp, money, unitList) {
     this.players[id] = {
+        id: id,
         hp: hp,
         money: money,
-        unitList: [unitList]
+        unitList
     };
 };
 
@@ -88,6 +86,7 @@ Game.addUnit = function(iid ,id, x, y, sprite) {
 };
 
 Game.removeUnit = function(socketID) {
+    console.log(this.players[socketID].unitList.length);
     for (let i = 0; i < this.players[socketID].unitList.length; i++) {
         this.players[socketID].unitList[i].destroy();
     }

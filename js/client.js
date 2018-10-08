@@ -15,12 +15,14 @@ Client.newUnit = function(unitSprite) {
 
 ///======================================================================
 //  수신
-Client.socket.on('addplayer', function(data) {
-    Game.addPlayer(data.id, data.hp, data.money, data.unitList);
-});
+Client.socket.on('addPlayerList', function(myID) {
+    Game.myID = myID;
 
-Client.socket.on('myId', function(id) {
-    Game.myId = id;
+    //  비동기 안전장치
+    Game.players = [];
+    Client.socket.on('addPlayerData', function(data) {
+        Game.addPlayer(data.id, data.hp, data.money, data.unitList);
+    });
 });
 
 Client.socket.on('getAllplayers', function(data) {
