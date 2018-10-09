@@ -1,9 +1,7 @@
 /// 게임 서버
 var express = require('express');
 var app = express();
-var server = require('http').Server(app);
-
-//  서버 객체 수신
+var server = app.listen(8081);
 var io = require('socket.io').listen(server);
 
 app.use('/js',express.static(__dirname + '/js'));
@@ -11,10 +9,6 @@ app.use('/assets',express.static(__dirname + '/assets'));
 
 app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
-});
-
-server.listen(process.env.PORT || 8081,function(){
-    console.log('Listening on '+server.address().port);
 });
 
 
@@ -35,8 +29,8 @@ io.on('connection',function(socket) {
         console.log('a user connection');
 
         //  내 정보 전송
-        socket.emit('myId', server.lastPlayerID++);
-        io.emit('addplayer', socket.player);
+        socket.emit('addPlayerList', server.lastPlayerID++);
+        io.emit('addPlayerData', socket.player);
 
         //  모든 플레이어 정보 가져오기
         socket.emit('getAllplayers', getAllPlayers());
