@@ -23,7 +23,7 @@ Game.preload = function() {
 
 Game.create = function() {
     //  배경색
-    BG = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'BG');
+    this.BG = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'BG');
     this.stage.backgroundColor = 'cccccc';
 
     //  월드 크기
@@ -72,9 +72,10 @@ Game.unitMov = function() {
 
 ///======================================================================
 //  소켓
-Game.addPlayer = function(id, hp, money, unitList) {
+Game.addPlayer = function(id, dir, hp, money, unitList) {
     this.players[id] = {
         id: id,
+        dir: dir,
         hp: hp,
         money: money,
         unitList
@@ -86,7 +87,6 @@ Game.addUnit = function(iid ,id, x, y, sprite) {
 };
 
 Game.removeUnit = function(socketID) {
-    console.log(this.players[socketID].unitList.length);
     for (let i = 0; i < this.players[socketID].unitList.length; i++) {
         this.players[socketID].unitList[i].destroy();
     }

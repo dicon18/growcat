@@ -1,7 +1,9 @@
 /// 게임 서버
 var express = require('express');
 var app = express();
-var server = app.listen(8081);
+var server = app.listen(8081, function() {
+    console.log('Listening on '+server.address().port);
+});
 var io = require('socket.io').listen(server);
 
 app.use('/js',express.static(__dirname + '/js'));
@@ -11,9 +13,9 @@ app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
 });
 
-
 //  플레이어 ID 
 server.lastPlayerID = 0;
+server.lastDir = 1;
 
 io.on('connection',function(socket) {
     socket.lastUnitID = 0;
@@ -22,6 +24,7 @@ io.on('connection',function(socket) {
         //  새로운 플레이어
         socket.player = {
             id: server.lastPlayerID,
+            dir: server.lastDir *= -1,
             hp: 20,
             money: 100,
             unitList: []

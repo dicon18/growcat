@@ -16,13 +16,14 @@ Client.newUnit = function(unitSprite) {
 
 ///======================================================================
 //  수신
+/// newPlayer()
 Client.socket.on('addPlayerList', function(myID) {
     Game.myID = myID;
 
     //  비동기 안전장치
     Game.players = [];
     Client.socket.on('addPlayerData', function(data) {
-        Game.addPlayer(data.id, data.hp, data.money, data.unitList);
+        Game.addPlayer(data.id, data.dir, data.hp, data.money, data.unitList);
     });
 });
 
@@ -52,3 +53,5 @@ Client.socket.on('getAllplayers', function(data) {
 Client.socket.on('addUnit', function(data){
     Game.addUnit(data.iid, data.id, data.x, data.y, data.sprite);
 });
+
+/// TODO unitMov
