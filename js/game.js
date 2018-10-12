@@ -13,13 +13,13 @@ game.state.add('Game', Game);
 Game.init = function() {
     //  게임창에 포커스가 없어도 반응
     game.stage.disableVisibilityChange = true;
-};
+}
 
 Game.preload = function() {
     game.load.image('BG', 'assets/background/background.png');
     game.load.image('pacman', 'assets/sprites/pacman.png');
     game.load.image('bt_unit1', 'assets/sprites/bt_unit1.png');
-};
+}
 
 Game.create = function() {
     //  배경색
@@ -33,11 +33,11 @@ Game.create = function() {
     this.bt_unit1 = this.add.button(100, 500, 'bt_unit1');
     this.bt_unit1.onInputDown.add(function() {
         Client.newUnit('pacman');
-    });
+    })
     this.bt_unit1.fixedToCamera = true;
 
     Client.newPlayer();
-};
+}
 
 Game.update = function() {
     this.cameraMov();
@@ -47,7 +47,7 @@ Game.update = function() {
 Game.render = function() {
     //  DEBUGER
     game.debug.cameraInfo(game.camera, 32, 32);
-};
+}
 
 
 ///======================================================================
@@ -60,7 +60,7 @@ Game.cameraMov = function() {
         if (game.input.x > hw + hw / 2)
             game.camera.x += 6;
     }
-};
+}
 
 Game.unitMov = function() {
     // for (var i = 0; i < this.players.length; i++) {
@@ -79,19 +79,19 @@ Game.addPlayer = function(id, dir, hp, money, unitList) {
         hp: hp,
         money: money,
         unitList
-    };
-};
+    }
+}
 
 Game.addUnit = function(iid ,id, x, y, sprite) {
     this.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
-};
+}
 
 Game.removeUnit = function(socketID) {
     for (let i = 0; i < this.players[socketID].unitList.length; i++) {
         this.players[socketID].unitList[i].destroy();
     }
     delete this.players[socketID]; 
-};
+}
 
 Game.disconnect = function(socketID) {
     this.removeUnit(socketID);
