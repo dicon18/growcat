@@ -8,7 +8,7 @@ Client.socket.connect('175.212.220.44:8081');
 //  송신
 Client.newPlayer = function() {
     Client.socket.emit('newplayer');
-};
+}
 
 Client.newUnit = function(unitSprite) {
     Client.socket.emit('newUnit', unitSprite)
@@ -24,8 +24,8 @@ Client.socket.on('addPlayerList', function(myID) {
     Game.players = [];
     Client.socket.on('addPlayerData', function(data) {
         Game.addPlayer(data.id, data.dir, data.hp, data.money, data.unitList);
-    });
-});
+    })
+})
 
 Client.socket.on('getAllplayers', function(data) {
     for (var i = 0; i < data.length; i++) {
@@ -42,16 +42,16 @@ Client.socket.on('getAllplayers', function(data) {
     //  연결 끊기
     Client.socket.on('disconnect', function(socketID) {
         Game.disconnect(socketID);
-    });
+    })
 
     Client.socket.on('remove', function(socketID) {
         Game.removeUnit(socketID);
-    });
-});
+    })
+})
 
 /// update
 Client.socket.on('addUnit', function(data){
     Game.addUnit(data.iid, data.id, data.x, data.y, data.sprite);
-});
+})
 
 /// TODO unitMov

@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 var server = app.listen(8081, function() {
     console.log('Listening on '+server.address().port);
-});
+})
 var io = require('socket.io').listen(server);
 
 app.use('/js',express.static(__dirname + '/js'));
@@ -11,7 +11,7 @@ app.use('/assets',express.static(__dirname + '/assets'));
 
 app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
-});
+})
 
 //  플레이어 ID 
 server.lastPlayerID = 0;
@@ -28,7 +28,7 @@ io.on('connection',function(socket) {
             hp: 20,
             money: 100,
             unitList: []
-        };
+        }
         console.log('a user connection');
 
         //  내 정보 전송
@@ -46,17 +46,17 @@ io.on('connection',function(socket) {
                 x: randomInt(100, 700),
                 y: randomInt(100, 500),
                 sprite: unitSprite
-            };
+            }
             io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
-        });
+        })
 
         //  연결 끊기
         socket.on('disconnect', function() {
             console.log('user disconnect');
             io.emit('disconnect', socket.player.id);
-        });
-    });
-});
+        })
+    })
+})
 
 /// 모든 플레이어 정보 반환
 function getAllPlayers() {
