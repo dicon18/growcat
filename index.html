@@ -8,9 +8,22 @@
     </head>
     <body>
     	<script src="socket.io/socket.io.js"></script>
-        <script src="js/phaser.js"></script>
+        <script src="js/phaser.min.js"></script>
         <script src="js/boot.js"></script>
-        <script src="js/game.js"></script>
+        <script src="js/title.js"></script>
+        <script src="js/preload.js"></script>
+        <script src="js/Game.js"></script>
         <script src="js/client.js"></script>
+
+        <script>
+            (function() {
+                var game = new Phaser.Game(CANVAS_WIDTH, CANVAS_HEIGHT, Phaser.AUTO);
+                game.state.add('boot', boot);
+                game.state.add('title', title);
+                game.state.add('preload', preload);
+                game.state.add('Game', Game);
+                game.state.start('boot');
+            }) ();
+        </script>
     </body>
 </html>
