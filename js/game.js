@@ -18,7 +18,10 @@ var Game = {
 
     update: function() {
         this.cameraMov();
-        this.unitMov();
+
+        //if (this.myID != undefined) {
+            this.movUnit();
+        //}
     },
 
     render: function() {
@@ -38,12 +41,12 @@ var Game = {
         }
     },
 
-    unitMov: function() {
-        // for (var i = 0; i < this.players.length; i++) {
-        //     for (var j = 0; j < this.players[i].unitList.length; j++) {
-        //             this.players[i].unitList[j].x += 4;
-        //     }
+    movUnit: function() {
+        var ul = this.players[this.myID].unitList;
+        // for (var i = 0; i < ul.length; i++) {
+        //     ul[i].x++;
         // }
+        Client.movUnit(this.myID);
     },
 
     ///======================================================================
@@ -61,6 +64,8 @@ var Game = {
     addUnit: function(iid ,id, x, y, sprite) {
         this.players[iid].unitList[id] = this.game.add.sprite(x, y, sprite);
     },
+
+    //updateUnit: function(id, ul)
 
     removeUnit: function(socketID) {
         for (let i = 0; i < this.players[socketID].unitList.length; i++) {

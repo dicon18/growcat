@@ -50,6 +50,15 @@ io.on('connection',function(socket) {
             io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
         })
 
+        socket.on('movUnit', function(id) {
+            var ul = socket.player.unitList;
+            for (var i = 0; i < ul.length; i++) {
+                ul[i].x += 1;
+            }
+            console.log(ul);
+            io.emit('movUnit', id, ul);
+        })
+
         //  연결 끊기
         socket.on('disconnect', function() {
             console.log('user disconnect');

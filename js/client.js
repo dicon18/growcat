@@ -6,11 +6,15 @@ Client.socket.connect('59.14.117.189:80');
 ///======================================================================
 //  송신
 Client.newPlayer = function() {
-    Client.socket.emit('newplayer');
+    this.socket.emit('newplayer');
 }
 
 Client.newUnit = function(unitSprite) {
-    Client.socket.emit('newUnit', unitSprite)
+    this.socket.emit('newUnit', unitSprite)
+}
+
+Client.movUnit = function(id) {
+    this.socket.emit('movUnit', id);
 }
 
 ///======================================================================
@@ -48,9 +52,12 @@ Client.socket.on('getAllplayers', function(data) {
     })
 })
 
-/// update
-Client.socket.on('addUnit', function(data){
+Client.socket.on('addUnit', function(data) {
     Game.addUnit(data.iid, data.id, data.x, data.y, data.sprite);
 })
 
-/// TODO unitMov
+Client.socket.on('movUnit', function(id, ul) {
+    for (var i = 0; i < Game.players[id].unitList.length; i++) {
+        Game.players[id].unitList[i].x = ul[i].x;
+    }
+})
