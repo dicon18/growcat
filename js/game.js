@@ -1,6 +1,4 @@
-var Game = function(game) {};
-
-Game.prototype = {
+var Game = {
     create: function() {
         //  배경색
         this.background = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'bg_game');

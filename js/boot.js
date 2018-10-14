@@ -3,9 +3,7 @@ const CANVAS_HEIGHT = 600;
 const WORLD_WIDTH = 1920;
 const WORLD_HEIGHT = 720;
 
-var boot = function(game) {};
-
-boot.prototype = {
+var boot = {
     init: function() {
         this.game.stage.disableVisibilityChange = true;
     },
@@ -15,9 +13,6 @@ boot.prototype = {
     },
 
     create: function() {
-        // this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        // this.scale.pageAlignHorizontally = true;
-        // this.scale.setScreenSize();
         this.game.state.start('preload');
     }
 }

@@ -1,6 +1,4 @@
-var preload = function(game) {};
-
-preload.prototype = {
+var preload = {
     preload: function() {
         var loading = this.add.sprite(0, 0, "bg_loading");
         this.load.setPreloadSprite(loading);
