@@ -31,11 +31,11 @@ io.on('connection',function(socket) {
         }
         console.log('a user connection');
 
-        //  내 정보 전송
-        socket.emit('addPlayerList', server.lastPlayerID++);
-        io.emit('addPlayerData', socket.player);
+        //  나를 제외한 모든 소켓에게 정보 전송
+        socket.broadcast.emit('addPlayer', socket.player);
 
-        //  모든 플레이어 정보 가져오기
+        //  ID부여 및 나를 포함한 모든 플레이어 정보 가져오기
+        socket.emit('getMyID', server.lastPlayerID++);
         socket.emit('getAllplayers', getAllPlayers());
     
         //  새로운 유닛
@@ -50,12 +50,12 @@ io.on('connection',function(socket) {
             io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
         })
 
+        //  유닛 움직이기
         socket.on('movUnit', function(id) {
             var ul = socket.player.unitList;
             for (var i = 0; i < ul.length; i++) {
                 ul[i].x += 1;
             }
-            console.log(ul);
             io.emit('movUnit', id, ul);
         })
 

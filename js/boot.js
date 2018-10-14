@@ -4,10 +4,6 @@ const WORLD_WIDTH = 1920;
 const WORLD_HEIGHT = 720;
 
 var boot = {
-    init: function() {
-        this.game.stage.disableVisibilityChange = true;
-    },
-
     preload: function() {
         this.game.load.image('bg_loading', "assets/background/bg_loading.png");
     },

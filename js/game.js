@@ -1,10 +1,21 @@
 var Game = {
+    ///======================================================================
+    //  Init
+    init: function() {
+        this.game.stage.disableVisibilityChange = true;
+    },
+
+    ///======================================================================
+    //  Create
     create: function() {
         //  배경색
         this.background = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'bg_game');
 
         //  월드 크기
         this.world.setBounds(0, 0, 1920, 720);
+
+        //  플레이어 리스트
+        Game.players = [];
 
         //  버튼 추가
         this.bt_unit1 = this.add.button(100, 500, 'bt_unit1');
@@ -13,17 +24,27 @@ var Game = {
         });
         this.bt_unit1.fixedToCamera = true;
 
+        //  새로운 플레이어 요청
+        this.isConnect = false;
         Client.newPlayer();
     },
 
+    ///======================================================================
+    //  Update
     update: function() {
         this.cameraMov();
 
-        //if (this.myID != undefined) {
-            this.movUnit();
-        //}
+        if (this.isConnect) {
+            console.log(this.players)
+            this.movUnit(this.myID);
+        }
+        else {
+            console.log(this.players)
+        }
     },
 
+    ///======================================================================
+    //  Render
     render: function() {
         //  DEBUGER
         this.game.debug.cameraInfo(this.game.camera, 32, 32);
@@ -41,12 +62,8 @@ var Game = {
         }
     },
 
-    movUnit: function() {
-        var ul = this.players[this.myID].unitList;
-        // for (var i = 0; i < ul.length; i++) {
-        //     ul[i].x++;
-        // }
-        Client.movUnit(this.myID);
+    movUnit: function(id) {
+        Client.movUnit(id);
     },
 
     ///======================================================================
@@ -64,8 +81,6 @@ var Game = {
     addUnit: function(iid ,id, x, y, sprite) {
         this.players[iid].unitList[id] = this.game.add.sprite(x, y, sprite);
     },
-
-    //updateUnit: function(id, ul)
 
     removeUnit: function(socketID) {
         for (let i = 0; i < this.players[socketID].unitList.length; i++) {
