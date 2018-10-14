@@ -43,8 +43,8 @@ io.on('connection',function(socket) {
             socket.player.unitList[socket.lastUnitID] = {
                 iid: socket.player.id,
                 id: socket.lastUnitID,
-                x: randomInt(100, 700),
-                y: randomInt(100, 500),
+                x: 0,
+                y: irandom_range(0, 600),
                 sprite: unitSprite
             }
             io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
@@ -78,7 +78,7 @@ function getAllPlayers() {
     return playerList;
 }
 
-/// utility
-function randomInt(low, high) {
+/// util
+function irandom_range(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }

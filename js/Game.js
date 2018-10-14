@@ -35,11 +35,7 @@ var Game = {
         this.cameraMov();
 
         if (this.isConnect) {
-            console.log(this.players)
             this.movUnit(this.myID);
-        }
-        else {
-            console.log(this.players)
         }
     },
 
@@ -82,14 +78,14 @@ var Game = {
         this.players[iid].unitList[id] = this.game.add.sprite(x, y, sprite);
     },
 
-    removeUnit: function(socketID) {
-        for (let i = 0; i < this.players[socketID].unitList.length; i++) {
-            this.players[socketID].unitList[i].destroy();
+    removeUnit: function(playerID) {
+        for (let i = 0; i < this.players[playerID].unitList.length; i++) {
+            this.players[playerID].unitList[i].destroy();
         }
-        delete this.players[socketID]; 
+        delete this.players[playerID]; 
     },
 
-    disconnect: function(socketID) {
-        this.removeUnit(socketID);
+    disconnect: function(playerID) {
+        this.removeUnit(playerID);
     }
 }
