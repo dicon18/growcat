@@ -13,13 +13,16 @@ app.get('/',function(req,res){
     res.sendFile(__dirname+'/index.html');
 })
 
-//  플레이어 ID 
+///======================================================================
+//  서버 제어
+/// 서버 측
 server.lastPlayerID = 0;
 server.lastDir = 1;
 
 io.on('connection',function(socket) {
     socket.lastUnitID = 0;
 
+    /// 소켓 측
     socket.on('newplayer',function() {
         //  새로운 플레이어
         socket.player = {
@@ -78,7 +81,8 @@ function getAllPlayers() {
     return playerList;
 }
 
-/// util
+///======================================================================
+//  util
 function irandom_range(low, high) {
     return Math.floor(Math.random() * (high - low) + low);
 }

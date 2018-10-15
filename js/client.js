@@ -28,36 +28,29 @@ Client.socket.on('addPlayer', function(data) {
 Client.socket.on('getMyID', function(myID) {
     Game.myID = myID;
     console.log('id추가');
-
-    Client.socket.on('getAllplayers', function(data) {    
-        for (var i = 0; i < data.length; i++) {
-            //  플레이어 리스트 정보 가져오기
-            Game.players[data[i].id] = data[i];
-    
-            for (var j = 0; j < data[i].unitList.length; j++) {
-                //  유닛 생성
-                let u = data[i].unitList[j];
-                Game.addUnit(u.iid, u.id, u.x, u.y, u.sprite);
-            }
-        }
-        console.log('플레이어 리스트 받아오기');
-    
-        //  유닛 삭제
-        Client.socket.on('remove', function(playerID) {
-            Game.removeUnit(playerID);
-        })
-    
-        //  연결 끊기
-        Client.socket.on('disconnect', function(playerID) {
-            Game.disconnect(playerID);
-        })
-    
-        //  연결 완료!
-        Game.isConnect = true;
-        console.log('연결 완료');
-    })
 })
 
+Client.socket.on('getAllplayers', function(data) {    
+    for (var i = 0; i < data.length; i++) {
+        //  플레이어 리스트 정보 가져오기
+        Game.players[data[i].id] = data[i];
+
+        for (var j = 0; j < data[i].unitList.length; j++) {
+            //  유닛 생성
+            let u = data[i].unitList[j];
+            Game.addUnit(u.iid, u.id, u.x, u.y, u.sprite);
+        }
+    }
+    console.log('플레이어 리스트 받아오기');
+})
+
+//  연결 완료!
+Client.socket.on('connected', function() {
+    Game.isConnect = true;
+    console.log('연결 완료');
+})
+
+/// 게임 제어
 Client.socket.on('addUnit', function(data) {
     Game.addUnit(data.iid, data.id, data.x, data.y, data.sprite);
 })
@@ -66,4 +59,14 @@ Client.socket.on('movUnit', function(id, ul) {
     for (var i = 0; i < Game.players[id].unitList.length; i++) {
         Game.players[id].unitList[i].x = ul[i].x;
     }
+})
+
+Client.socket.on('remove', function(playerID) {
+    Game.removeUnit(playerID);
+    console.log('유닉 삭제')
+})
+
+Client.socket.on('disconnect', function(playerID) {
+    Game.disconnect(playerID);
+    console.log('연결 끊김')
 })
