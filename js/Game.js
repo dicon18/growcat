@@ -15,7 +15,7 @@ var Game = {
         this.world.setBounds(0, 0, 1920, 720);
 
         //  플레이어 리스트
-        Game.players = [];
+        this.players = [];
 
         //  버튼 추가
         this.bt_unit1 = this.add.button(100, 500, 'bt_unit1');
@@ -35,7 +35,7 @@ var Game = {
         this.cameraMov();
 
         if (this.isConnect) {
-            this.movUnit(this.myID);
+            this.movUnit(this.myId);
         }
     },
 
@@ -56,6 +56,11 @@ var Game = {
             if (this.game.input.x > hw + hw / 2)
                 this.game.camera.x += 6;
         }
+    },
+
+    createUnit: function(sprite) {
+        Client.newUnit(sprite)
+        //  TODO x, y
     },
 
     movUnit: function(id) {

@@ -17,14 +17,15 @@ app.get('/',function(req,res){
 //  서버 제어
 /// 서버 측
 server.lastPlayerID = 0;
-server.lastDir = 1;
+server.lastDir = -1;
 
+/// 소켓 측
 io.on('connection',function(socket) {
     socket.lastUnitID = 0;
 
-    /// 소켓 측
     socket.on('newplayer',function() {
         //  새로운 플레이어
+        console.log('a user connection');
         socket.player = {
             id: server.lastPlayerID,
             dir: server.lastDir *= -1,
@@ -32,15 +33,13 @@ io.on('connection',function(socket) {
             money: 100,
             unitList: []
         }
-        console.log('a user connection');
 
         //  나를 제외한 모든 소켓에게 정보 전송
         socket.broadcast.emit('addPlayer', socket.player);
 
         //  ID부여 및 나를 포함한 모든 플레이어 정보 가져오기
-        socket.emit('getMyID', server.lastPlayerID++);
-        socket.emit('getAllplayers', getAllPlayers());
-    
+        socket.emit('getAllplayers', server.lastPlayerID++, getAllPlayers());
+        
         //  새로운 유닛
         socket.on('newUnit', function(unitSprite) {
             socket.player.unitList[socket.lastUnitID] = {
@@ -70,14 +69,14 @@ io.on('connection',function(socket) {
     })
 })
 
-/// 모든 플레이어 정보 반환
+/// 접속된 플레이어 정보 반환
 function getAllPlayers() {
     var playerList = [];
     Object.keys(io.sockets.connected).forEach(function(socketID) {
         var player = io.sockets.connected[socketID].player;
         if (player) playerList.push(player);
     });
-    console.log(playerList);
+    //console.log(playerList);
     return playerList;
 }
 
