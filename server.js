@@ -23,7 +23,7 @@ server.lastDir = -1;
 io.on('connection',function(socket) {
     socket.lastUnitID = 0;
 
-    socket.on('newplayer',function() {
+    socket.on('newPlayer',function() {
         //  새로운 플레이어
         console.log('a user connection');
         socket.player = {
@@ -38,7 +38,7 @@ io.on('connection',function(socket) {
         socket.broadcast.emit('addPlayer', socket.player);
 
         //  ID부여 및 나를 포함한 모든 플레이어 정보 가져오기
-        socket.emit('getAllplayers', server.lastPlayerID++, getAllPlayers());
+        socket.emit('newPlayer', server.lastPlayerID++, getAllPlayers());
         
         //  새로운 유닛
         socket.on('newUnit', function(unitSprite) {
@@ -69,7 +69,7 @@ io.on('connection',function(socket) {
     })
 })
 
-/// 접속된 플레이어 정보 반환
+//  접속된 플레이어 정보 반환
 function getAllPlayers() {
     var playerList = [];
     Object.keys(io.sockets.connected).forEach(function(socketID) {
