@@ -64,52 +64,5 @@ var Game = {
 
     reqMovUnit: function(id, x, y) {
         Client.socket.emit('movUnit', id, x, y);
-    },
-
-    ///======================================================================
-    //  클라이언트 함수
-    addPlayer: function(id, dir, hp, money, unitList) {
-        this.players[id] = {
-            id: id,
-            dir: dir,
-            hp: hp,
-            money: money,
-            unitList
-        }
-    },
-
-    newPlayer: function(myId, data) {
-        //  ID 부여
-        this.myId = myId;
-        for (var i = 0; i < data.length; i++) {
-            this.players[data[i].id] = data[i];
-            for (var j = 0; j < data[i].unitList.length; j++) {
-                var ul = data[i].unitList[j];
-                this.addUnit(ul.iid, ul.id, ul.x, ul.y, ul.sprite);
-            }
-        }
-        this.isConnect = true;
-    },
-
-    addUnit: function(iid ,id, x, y, sprite) {
-        this.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
-    },
-
-    movUnit: function(id, ul) {
-        for (var i = 0; i < this.players[id].unitList.length; i++) {
-            this.players[id].unitList[i].x = ul[i].x;
-            this.players[id].unitList[i].y = ul[i].y;
-        }
-    },
-
-    removeUnit: function(playerId) {
-        for (var i = 0; i < this.players[playerId].unitList.length; i++) {
-            this.players[playerId].unitList[i].destroy();
-        }
-        delete this.players[playerId]; 
-    },
-
-    disconnect: function(playerId) {
-        this.removeUnit(playerId);
     }
 }
