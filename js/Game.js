@@ -2,7 +2,7 @@ var Game = {
     ///======================================================================
     //  Init
     init: function() {
-        this.game.stage.disableVisibilityChange = true;
+        game.stage.disableVisibilityChange = true;
     },
 
     ///======================================================================
@@ -18,10 +18,8 @@ var Game = {
         this.players = [];
 
         //  버튼 추가
-        this.bt_unit1 = this.add.button(100, 500, 'bt_unit1');
-        this.bt_unit1.onInputDown.add(function() {
-            Client.socket.emit('newUnit', 'pacman');    //  TODO 함수로 대체
-        });
+        this.bt_unit1 = this.add.button(100, 500, 'bt_unit1', this.reqCreateUnit, this);
+        this.bt_unit1.unitSprite = 'spr_unit1';
         this.bt_unit1.fixedToCamera = true;
 
         //  새로운 플레이어 요청
@@ -35,7 +33,7 @@ var Game = {
         this.cameraMov();
 
         if (this.isConnect) {
-            this.reqMovUnit(this.myId);
+            this.reqMovUnit(this.myId, 2, 2);
         }
     },
 
@@ -43,30 +41,29 @@ var Game = {
     //  Render
     render: function() {
         //  DEBUGER
-        this.game.debug.cameraInfo(this.game.camera, 32, 32);
+        game.debug.cameraInfo(game.camera, 32, 32);
     },
 
     ///=====================================================================
     //  게임 함수
     cameraMov: function() {
         var hw = CANVAS_WIDTH / 2;
-        if (this.game.input.y < (CANVAS_HEIGHT / 3) * 2) {
-            if (this.game.input.x < hw - hw / 2) {
-                this.game.camera.x -= 6;
+        if (game.input.y < (CANVAS_HEIGHT / 3) * 2) {
+            if (game.input.x < hw - hw / 2) {
+                game.camera.x -= 6;
             }
-            if (this.game.input.x > hw + hw / 2) {
-                this.game.camera.x += 6;
+            if (game.input.x > hw + hw / 2) {
+                game.camera.x += 6;
             }
         }
     },
 
-    reqCreateUnit: function(sprite) {
-        Client.socket.emit('newUnit', sprite);  //  TODO x, y 추가
-        //  TODO x, y
+    reqCreateUnit: function(button) {
+        Client.socket.emit('newUnit', button.unitSprite, 0, irandom_range(0, CANVAS_HEIGHT));
     },
 
-    reqMovUnit: function(id) {
-        Client.socket.emit('movUnit', id);  //  TODO x, y 추가
+    reqMovUnit: function(id, x, y) {
+        Client.socket.emit('movUnit', id, x, y);
     },
 
     ///======================================================================
@@ -87,25 +84,26 @@ var Game = {
         for (var i = 0; i < data.length; i++) {
             this.players[data[i].id] = data[i];
             for (var j = 0; j < data[i].unitList.length; j++) {
-                let u = data[i].unitList[j];
-                this.addUnit(u.iid, u.id, u.x, u.y, u.sprite);
+                var ul = data[i].unitList[j];
+                this.addUnit(ul.iid, ul.id, ul.x, ul.y, ul.sprite);
             }
         }
         this.isConnect = true;
     },
 
     addUnit: function(iid ,id, x, y, sprite) {
-        this.players[iid].unitList[id] = this.game.add.sprite(x, y, sprite);
+        this.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
     },
 
     movUnit: function(id, ul) {
         for (var i = 0; i < this.players[id].unitList.length; i++) {
             this.players[id].unitList[i].x = ul[i].x;
+            this.players[id].unitList[i].y = ul[i].y;
         }
     },
 
     removeUnit: function(playerId) {
-        for (let i = 0; i < this.players[playerId].unitList.length; i++) {
+        for (var i = 0; i < this.players[playerId].unitList.length; i++) {
             this.players[playerId].unitList[i].destroy();
         }
         delete this.players[playerId]; 

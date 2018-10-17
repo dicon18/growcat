@@ -6,23 +6,24 @@
         <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=4f32ecc8f43d">
     </head>
     <body>
+        <!-- 파일 불러오기 -->
     	<script src="socket.io/socket.io.js"></script>
         <script src="js/phaser.min.js"></script>
+        
         <script src="js/boot.js"></script>
         <script src="js/title.js"></script>
         <script src="js/preload.js"></script>
         <script src="js/Game.js"></script>
         <script src="js/client.js"></script>
 
+        <!-- 메인 -->
         <script>
-            (function() {
-                var game = new Phaser.Game(CANVAS_WIDTH, CANVAS_HEIGHT, Phaser.AUTO);
-                game.state.add('boot', boot);
-                game.state.add('title', title);
-                game.state.add('preload', preload);
-                game.state.add('Game', Game);
-                game.state.start('boot');
-            }) ();
+            var game = new Phaser.Game(CANVAS_WIDTH, CANVAS_HEIGHT, Phaser.AUTO);
+            game.state.add('boot', boot);
+            game.state.add('title', title);
+            game.state.add('preload', preload);
+            game.state.add('Game', Game);
+            game.state.start('boot');
         </script>
     </body>
 </html>

@@ -41,22 +41,23 @@ io.on('connection',function(socket) {
         socket.emit('newPlayer', server.lastPlayerID++, getAllPlayers());
         
         //  새로운 유닛
-        socket.on('newUnit', function(unitSprite) {
+        socket.on('newUnit', function(unitSprite, unitPosX, unitPosY) {
             socket.player.unitList[socket.lastUnitID] = {
                 iid: socket.player.id,
                 id: socket.lastUnitID,
-                x: 0,
-                y: irandom_range(0, 600),
+                x: unitPosX,
+                y: unitPosY,
                 sprite: unitSprite
             }
             io.emit('addUnit', socket.player.unitList[socket.lastUnitID++]);
         })
 
         //  유닛 움직이기
-        socket.on('movUnit', function(id) {
+        socket.on('movUnit', function(id, x, y) {
             var ul = socket.player.unitList;
             for (var i = 0; i < ul.length; i++) {
-                ul[i].x += 1;
+                ul[i].x += x;
+                ul[i].y += y;
             }
             io.emit('movUnit', id, ul);
         })
@@ -78,10 +79,4 @@ function getAllPlayers() {
     });
     //console.log(playerList);
     return playerList;
-}
-
-///======================================================================
-//  util
-function irandom_range(low, high) {
-    return Math.floor(Math.random() * (high - low) + low);
 }

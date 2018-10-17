@@ -1,15 +1,21 @@
+///======================================================================
+//  환경 설정
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 const WORLD_WIDTH = 1920;
 const WORLD_HEIGHT = 720;
 
+function irandom_range(low, high) {
+    return Math.floor(Math.random() * (high - low) + low);
+}
+
 var boot = {
     preload: function() {
-        this.game.load.image('bg_loading', "assets/background/bg_loading.png");
+        game.load.image('bg_loading', "assets/background/bg_loading.png");
     },
 
     create: function() {
-        this.game.state.start('preload');
+        game.state.start('preload');
     }
 }
 
