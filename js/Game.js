@@ -31,13 +31,15 @@ var Game = {
     ///======================================================================
     //  Update
     update: function() {
+        //  카메라 움직임
         this.cameraMov();
 
+        //  플레이어 제어
         if (this.isConnect) {
-            //let targetId = this.id;
+            let player_id = this.id;
             let ul = this.players[this.id].unitList;
             for (let i in ul) {
-                this.reqMovUnit(ul[i].id, 2, 0.04);
+                this.reqMovUnit(player_id, ul[i].id, 2, 0.04);
             }
         }
     },
@@ -64,12 +66,10 @@ var Game = {
     },
 
     reqCreateUnit: function(button) {
-        //  (x, y, sprite)
         Client.socket.emit('addUnit', 0, irandom_range(0, CANVAS_HEIGHT), button.unitSprite);
     },
 
-    reqMovUnit: function(id, x, y) {
-        //TODO->Client.socket.io.to(소켓아이디).emit(...)
-        Client.socket.emit('movUnit', id, x, y);
+    reqMovUnit: function(player_id, unit_id, x, y) {
+        Client.socket.emit('movUnit', player_id, unit_id, x, y);
     }
 }

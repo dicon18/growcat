@@ -3,11 +3,11 @@ var Client = {};
 Client.socket = io();
 Client.socket.connect('59.14.117.189:80');
 
-///======================================================================
+///==============================================================================================================
 //  클라이언트(서버에 데이터 요청) << 클라이언트 소켓/(인터페이스 역활) << 서버(연결된 소켓간 데이터 전송) >> DB(TODO)
 /// 플레이어 중도 참가
 Client.socket.on('addPlayer', function(data) {
-    Client.addPlayer(data);  
+    Client.addPlayer(data);
 })
 
 /// 게임 제어
@@ -68,13 +68,13 @@ Client.movUnit = function(player_id, unit_id, ul) {
     Game.players[player_id].unitList[unit_id].y = ul.y;
 }
 
-Client.removeUnit = function(playerId) {
-    for (var i in Game.players[playerId].unitList) {
-        Game.players[playerId].unitList[i].destroy();
+Client.removeUnit = function(player_id) {
+    for (let i in Game.players[player_id].unitList) {
+        Game.players[player_id].unitList[i].destroy();
     }
-    delete Game.players[playerId]; 
+    delete Game.players[player_id]; 
 }
 
-Client.disconnect = function(playerId) {
-    this.removeUnit(playerId);
+Client.disconnect = function(player_id) {
+    this.removeUnit(player_id);
 }   
