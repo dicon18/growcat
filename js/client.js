@@ -40,23 +40,14 @@ Client.socket.on('newPlayer', function(player_id, data) {
 ///======================================================================
 //  클라이언트 함수
 Client.addPlayer = function(data) {
-    Game.players[data.id] = {
-        id: data.id,
-        dir: data.dir,
-        hp: data.hp,
-        money: data.money,
-        unitList: data.unitList
-    }
+    Game.players[data.id] = data;
 }
 
 Client.newPlayer = function(player_id, data) {
-    Game.iid = Client.socket.id;
     Game.id = player_id;
     for (let i in data) {
         Game.players[data[i].id] = data[i];
         for (let j in data[i].unitList) {
-            //let ul = data[i].unitList[j];
-            //this.addUnit(ul.iid, ul.id, ul.x, ul.y, ul.sprite);
             this.addUnit(data[i].unitList[j]);
         }
     }
@@ -68,8 +59,7 @@ Client.addUnit = function(data) {
     Game.players[data.iid].unitList[data.id].anchor.x = 0.5;
     Game.players[data.iid].unitList[data.id].anchor.y = 0.5;
 
-    Game.players[data.iid].unitList[data.id].iiid = Client.socket.id;
-    Game.players[data.iid].unitList[data.id].iid = data.iid;
+    Game.players[data.iid].unitList[data.id].iid = Client.socket.id;
     Game.players[data.iid].unitList[data.id].id = data.id;
 }
 
@@ -79,7 +69,7 @@ Client.movUnit = function(player_id, unit_id, ul) {
 }
 
 Client.removeUnit = function(playerId) {
-    for (var i = 0; i < Game.players[playerId].unitList.length; i++) {
+    for (var i in Game.players[playerId].unitList) {
         Game.players[playerId].unitList[i].destroy();
     }
     delete Game.players[playerId]; 
@@ -87,4 +77,4 @@ Client.removeUnit = function(playerId) {
 
 Client.disconnect = function(playerId) {
     this.removeUnit(playerId);
-}
+}   

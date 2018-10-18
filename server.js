@@ -16,7 +16,6 @@ app.get('/',function(req,res){
 ///======================================================================
 //  서버 제어
 /// 서버 측
-server.lastPlayerId = 0;
 server.lastDir = -1;
 
 /// 소켓 측
@@ -26,7 +25,7 @@ io.on('connection',function(socket) {
     socket.on('newPlayer',function() {
         //  새로운 플레이어
         socket.player = {
-            id: server.lastPlayerId,
+            id: socket.id,
             dir: server.lastDir *= -1,
             hp: 20,
             money: 100,
@@ -38,10 +37,10 @@ io.on('connection',function(socket) {
         socket.broadcast.emit('addPlayer', socket.player);
 
         //  ID부여 및 나를 포함한 모든 플레이어 정보 가져오기
-        socket.emit('newPlayer', server.lastPlayerId++, getAllPlayers());
+        socket.emit('newPlayer', socket.player.id, getAllPlayers());
         
         //  새로운 유닛
-        socket.on('addUnit', function(sprite, x, y) {
+        socket.on('addUnit', function(x, y, sprite) {
             socket.player.unitList[socket.lastUnitId] = {
                 iid: socket.player.id,
                 id: socket.lastUnitId,
@@ -54,10 +53,10 @@ io.on('connection',function(socket) {
 
         //  유닛 움직이기
         socket.on('movUnit', function(id, x, y) {
-            let ul = socket.player.unitList[id];
-            ul.x += x;
-            ul.y += y;
-            io.emit('movUnit', ul.iid, id, ul);
+            let unit = socket.player.unitList[id];
+            unit.x += x;
+            unit.y += y;
+            io.emit('movUnit', unit.iid, id, unit);
         })
 
         //  연결 끊기

@@ -34,8 +34,9 @@ var Game = {
         this.cameraMov();
 
         if (this.isConnect) {
-            var ul = this.players[this.id].unitList;
-            for (var i in ul) {
+            //let targetId = this.id;
+            let ul = this.players[this.id].unitList;
+            for (let i in ul) {
                 this.reqMovUnit(ul[i].id, 2, 0.04);
             }
         }
@@ -51,7 +52,7 @@ var Game = {
     ///=====================================================================
     //  게임 함수
     cameraMov: function() {
-        var hw = CANVAS_WIDTH / 2;
+        let hw = CANVAS_WIDTH / 2;
         if (game.input.y < (CANVAS_HEIGHT / 3) * 2) {
             if (game.input.x < hw - hw / 2) {
                 game.camera.x -= 6;
@@ -63,7 +64,8 @@ var Game = {
     },
 
     reqCreateUnit: function(button) {
-        Client.socket.emit('addUnit', button.unitSprite, 0, irandom_range(0, CANVAS_HEIGHT));
+        //  (x, y, sprite)
+        Client.socket.emit('addUnit', 0, irandom_range(0, CANVAS_HEIGHT), button.unitSprite);
     },
 
     reqMovUnit: function(id, x, y) {
