@@ -1,3 +1,4 @@
+/// 게임 리소스 불러오기
 var preload = {
     preload: function() {
         var loading = this.add.sprite(0, 0, "bg_loading");

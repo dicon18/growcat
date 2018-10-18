@@ -1,3 +1,4 @@
+/// 게임 클라이언트
 var Game = {
     ///======================================================================
     //  Init
@@ -33,7 +34,10 @@ var Game = {
         this.cameraMov();
 
         if (this.isConnect) {
-            this.reqMovUnit(this.myId, 2, 2);
+            var ul = this.players[this.id].unitList;
+            for (var i in ul) {
+                this.reqMovUnit(ul[i].id, 2, 0.04);
+            }
         }
     },
 
@@ -59,10 +63,11 @@ var Game = {
     },
 
     reqCreateUnit: function(button) {
-        Client.socket.emit('newUnit', button.unitSprite, 0, irandom_range(0, CANVAS_HEIGHT));
+        Client.socket.emit('addUnit', button.unitSprite, 0, irandom_range(0, CANVAS_HEIGHT));
     },
 
     reqMovUnit: function(id, x, y) {
+        //TODO->Client.socket.io.to(소켓아이디).emit(...)
         Client.socket.emit('movUnit', id, x, y);
     }
 }

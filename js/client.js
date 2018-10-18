@@ -1,77 +1,81 @@
-/// 클라이언트 인터페이스
+/// 클라이언트 소켓 인터페이스
 var Client = {};
 Client.socket = io();
 Client.socket.connect('59.14.117.189:80');
 
 ///======================================================================
-//  클라이언트(Game.js) <<<< 인터페이스(client.js) <<>> 서버(server.js)
-//            >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//  클라이언트(서버에 데이터 요청) << 클라이언트 소켓/(인터페이스 역활) << 서버(연결된 소켓간 데이터 전송) >> DB(TODO)
 /// 플레이어 중도 참가
 Client.socket.on('addPlayer', function(data) {
-    Client.addPlayer(data.id, data.dir, data.hp, data.money, data.unitList);  
+    Client.addPlayer(data);  
 })
 
 /// 게임 제어
-Client.socket.on('newPlayer', function(myId, data) {
+Client.socket.on('newPlayer', function(player_id, data) {
     //  새로운 플레이어 설정
-    Client.newPlayer(myId, data);
+    Client.newPlayer(player_id, data);
 
     //  유닛 생성
     Client.socket.on('addUnit', function(data) {
-        Client.addUnit(data.iid, data.id, data.x, data.y, data.sprite);
+        Client.addUnit(data);
     })
 
     //  유닛 이동
-    Client.socket.on('movUnit', function(id, ul) {
-        Client.movUnit(id, ul);
+    Client.socket.on('movUnit', function(player_id, unit_id, ul) {
+        Client.movUnit(player_id, unit_id, ul);
     })
 
     //  유닛 제거
-    Client.socket.on('remove', function(playerId) {
-        Client.removeUnit(playerId);
+    Client.socket.on('remove', function(player_id) {
+        Client.removeUnit(player_id);
         //TODO emit unit
     })
     
     //  연결 끊김
-    Client.socket.on('disconnect', function(playerId) {
-        Client.disconnect(playerId);
+    Client.socket.on('disconnect', function(player_id) {
+        Client.disconnect(player_id);
     })
 })
 
 ///======================================================================
 //  클라이언트 함수
-Client.addPlayer = function(id, dir, hp, money, unitList) {
-    Game.players[id] = {
-        id: id,
-        dir: dir,
-        hp: hp,
-        money: money,
-        unitList
+Client.addPlayer = function(data) {
+    Game.players[data.id] = {
+        id: data.id,
+        dir: data.dir,
+        hp: data.hp,
+        money: data.money,
+        unitList: data.unitList
     }
 }
 
-Client.newPlayer = function(myId, data) {
-    //  ID 부여
-    Game.myId = myId;
-    for (var i = 0; i < data.length; i++) {
+Client.newPlayer = function(player_id, data) {
+    Game.iid = Client.socket.id;
+    Game.id = player_id;
+    for (let i in data) {
         Game.players[data[i].id] = data[i];
-        for (var j = 0; j < data[i].unitList.length; j++) {
-            var ul = data[i].unitList[j];
-            this.addUnit(ul.iid, ul.id, ul.x, ul.y, ul.sprite);
+        for (let j in data[i].unitList) {
+            //let ul = data[i].unitList[j];
+            //this.addUnit(ul.iid, ul.id, ul.x, ul.y, ul.sprite);
+            this.addUnit(data[i].unitList[j]);
         }
     }
     Game.isConnect = true;
 }
 
-Client.addUnit = function(iid ,id, x, y, sprite) {
-    Game.players[iid].unitList[id] = game.add.sprite(x, y, sprite);
+Client.addUnit = function(data) {
+    Game.players[data.iid].unitList[data.id] = game.add.sprite(data.x, data.y, data.sprite);
+    Game.players[data.iid].unitList[data.id].anchor.x = 0.5;
+    Game.players[data.iid].unitList[data.id].anchor.y = 0.5;
+
+    Game.players[data.iid].unitList[data.id].iiid = Client.socket.id;
+    Game.players[data.iid].unitList[data.id].iid = data.iid;
+    Game.players[data.iid].unitList[data.id].id = data.id;
 }
 
-Client.movUnit = function(id, ul) {
-    for (var i = 0; i < Game.players[id].unitList.length; i++) {
-        Game.players[id].unitList[i].x = ul[i].x;
-        Game.players[id].unitList[i].y = ul[i].y;
-    }
+Client.movUnit = function(player_id, unit_id, ul) {
+    Game.players[player_id].unitList[unit_id].x = ul.x;
+    Game.players[player_id].unitList[unit_id].y = ul.y;
 }
 
 Client.removeUnit = function(playerId) {
@@ -82,5 +86,5 @@ Client.removeUnit = function(playerId) {
 }
 
 Client.disconnect = function(playerId) {
-    Game.removeUnit(playerId);
+    this.removeUnit(playerId);
 }
