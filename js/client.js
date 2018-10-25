@@ -57,7 +57,7 @@ Client.newPlayer = function(player_id, data) {
             this.addUnit(data[i].unitList[j]);
         }
     }
-    Game.isConnect = true;
+    Client.socket.emit('addUnit', irandom_range(0, CANVAS_WIDTH), irandom_range(0, CANVAS_HEIGHT), "spr_unit1");
 }
 
 Client.addUnit = function(data) {
@@ -67,6 +67,8 @@ Client.addUnit = function(data) {
 
     Game.players[data.iid].unitList[data.id].iid = Client.socket.id;
     Game.players[data.iid].unitList[data.id].id = data.id;
+
+    Game.connected = true;
 }
 
 Client.movUnit = function(player_id, unit_id, ul) {
