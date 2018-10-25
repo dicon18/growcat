@@ -11,6 +11,7 @@ var preload = {
         game.load.image('bt_unit1', 'assets/sprites/bt_unit1.png');
 
         game.load.image('spr_unit1', 'assets/sprites/spr_unit1.png');
+        game.load.image('spr_circle','assets/sprites/spr_circle.png');
     },
 
     create: function() {
