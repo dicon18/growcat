@@ -9,7 +9,7 @@ var io = require('socket.io').listen(server);
 app.use('/js',express.static(__dirname + '/js'));
 app.use('/assets',express.static(__dirname + '/assets'));
 
-app.get('/',function(req,res){
+app.get('/',function(req, res) {
     res.sendFile(__dirname+'/index.html');
 })
 
@@ -19,7 +19,7 @@ app.get('/',function(req,res){
 //========================================================================================================================
 
 //  서버 측
-server.lastDir = -1;
+//TODO
 
 //  소켓 측
 io.on('connection',function(socket) {
@@ -29,9 +29,6 @@ io.on('connection',function(socket) {
         //  새로운 플레이어
         socket.player = {
             id: socket.id,
-            dir: server.lastDir *= -1,
-            hp: 20,
-            money: 100,
             unitList: []
         }
         console.log('WELCOME ['+socket.player.id+'] :: CONTACT: ' + getAllPlayers().length);
@@ -59,7 +56,7 @@ io.on('connection',function(socket) {
             let unit = socket.player.unitList[id];
             unit.x += x;
             unit.y += y;
-            io.emit('movUnit', unit.iid, id, unit);
+            io.emit('movUnit', player_id, id, unit);
         })
 
         //  연결 끊기
