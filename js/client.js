@@ -65,6 +65,9 @@ Client.addUnit = function(data) {
     Game.players[data.iid].unitList[data.id].anchor.x = 0.5;
     Game.players[data.iid].unitList[data.id].anchor.y = 0.5;
 
+    game.physics.enable(Game.players[data.iid].unitList[data.id], Phaser.Physics.ARCADE);
+    game.camera.follow(Game.players[data.iid].unitList[data.id]);
+
     Game.players[data.iid].unitList[data.id].iid = Client.socket.id;
     Game.players[data.iid].unitList[data.id].id = data.id;
 
