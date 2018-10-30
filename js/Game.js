@@ -30,7 +30,9 @@ var Game = {
     update: function () {
         //  게임 제어
         if (this.connected) {
-            this.reqMovUnit(this.id, this.players[this.id].unitList[0].id);
+            let unit = this.players[this.id].unitList[0];
+            this.reqMovUnit(this.id, unit.id);
+            unit.rotation = game.physics.arcade.angleToPointer(unit);
         }
     },
 

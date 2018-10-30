@@ -1,9 +1,11 @@
 /// 게임 리소스 불러오기
 var preload = {
     preload: function() {
+        //  Loading
         var loading = this.add.sprite(0, 0, "bg_loading");
         this.load.setPreloadSprite(loading);
         
+        //  Image
         game.load.image('bg_title', 'assets/background/bg_title.png');
         game.load.image('bg_game', 'assets/background/bg_game.png');
 
@@ -11,7 +13,9 @@ var preload = {
         game.load.image('bt_unit1', 'assets/sprites/bt_unit1.png');
 
         game.load.image('spr_unit1', 'assets/sprites/spr_unit1.png');
-        //game.load.image('spr_circle','assets/sprites/spr_circle.png');
+
+        //  Sound
+        game.load.audio('BGM', 'assets/sound/bgm.mp3');        
     },
 
     create: function() {
