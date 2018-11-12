@@ -29,6 +29,7 @@ var Game = {
 
     update: function() {
         if (this.isConnected) {
+            //console.log(this.players[this.id].unitList[0].x);
             let unit = this.players[this.id].unitList[0];
             this.reqMovUnit(unit);
         }

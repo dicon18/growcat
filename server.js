@@ -37,7 +37,7 @@ io.on('connection',function(socket) {
         //  나를 제외한 모든 소켓에게 정보 전송
         socket.broadcast.emit('addPlayer', socket.player);
 
-        //  ID부여 및 나를 포함한 모든 플레이어 정보 가져오기
+        // 나를 포함한 모든 플레이어 정보 가져오기 및 ID부여 및 
         socket.emit('newPlayer', socket.player.id, getAllPlayers());
         
         //  새로운 유닛
@@ -49,7 +49,9 @@ io.on('connection',function(socket) {
                 y: y,
                 sprite: sprite
             }
-            io.emit('addUnit', socket.player.unitList[socket.lastUnitId++]);
+            socket.emit('addUnit', socket.player.unitList[socket.lastUnitId], false);
+            socket.broadcast.emit('addUnit', socket.player.unitList[socket.lastUnitId], true);
+            socket.lastUnitId++;
         })
 
         //  유닛 움직이기
@@ -79,6 +81,5 @@ function getAllPlayers() {
         let player = io.sockets.connected[socket_id].player;
         if (player) playerList.push(player);
     });
-    //console.log(playerList);
     return playerList;
 }

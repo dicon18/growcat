@@ -19,8 +19,8 @@ Client.socket.on('newPlayer', function(playerId, data) {
     Client.newPlayer(playerId, data);
 
     //  유닛 생성
-    Client.socket.on('addUnit', function(data) {
-        Client.addUnit(data);
+    Client.socket.on('addUnit', function(data, isBroadcast) {
+        Client.addUnit(data, isBroadcast);
     })
 
     //  유닛 이동
@@ -60,13 +60,15 @@ Client.newPlayer = function(playerId, data) {
     Client.socket.emit('addUnit', irandom_range(0, CANVAS_WIDTH), irandom_range(0, CANVAS_HEIGHT), "spr_unit1");
 }
 
-Client.addUnit = function(data) {
+Client.addUnit = function(data, isBroadcast) {
     Game.players[data.iid].unitList[data.id] = game.add.sprite(data.x, data.y, data.sprite);
     Game.players[data.iid].unitList[data.id].anchor.x = 0.5;
     Game.players[data.iid].unitList[data.id].anchor.y = 0.5;
     Game.players[data.iid].unitList[data.id].iid = Client.socket.id;
     Game.players[data.iid].unitList[data.id].id = data.id;
-    Game.isConnected = true;
+    if (isBroadcast == false) {
+        Game.isConnected = true;
+    }
 }
 
 Client.movUnit = function(playerId, unitId, ul) {
