@@ -5,11 +5,11 @@ var Game = {
     //  2018.10.18 강준하
     //========================================================================================================================
 
-    init: function () {
+    init: function() {
         game.stage.disableVisibilityChange = true;
     },
 
-    create: function () {
+    create: function() {
         //  타일셋
         this.background = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'bg_game');
 
@@ -27,14 +27,14 @@ var Game = {
         this.cursors = game.input.keyboard.createCursorKeys();
     },
 
-    update: function () {
+    update: function() {
         if (this.isConnected) {
             let unit = this.players[this.id].unitList[0];
             this.reqMovUnit(unit);
         }
     },
 
-    render: function () {
+    render: function() {
 
     },
 
@@ -43,7 +43,7 @@ var Game = {
     //  2018.10.18 강준하
     //========================================================================================================================
 
-    reqMovUnit: function (unit) {
+    reqMovUnit: function(unit) {
         let speed = 3;
         let hspeed = unit.x + (this.cursors.right.isDown - this.cursors.left.isDown) * speed;
         let vspeed = unit.y + (this.cursors.down.isDown - this.cursors.up.isDown) * speed;
