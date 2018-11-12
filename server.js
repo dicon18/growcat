@@ -19,11 +19,12 @@ app.get('/',function(req, res) {
 //========================================================================================================================
 
 //  서버 측
-//TODO
+server.score1 = 0;
+server.score2 = 0;
 
 //  소켓 측
 io.on('connection',function(socket) {
-    socket.lastUnit_id = 0;
+    socket.lastUnitId = 0;
 
     socket.on('newPlayer',function() {
         //  새로운 플레이어
@@ -41,22 +42,22 @@ io.on('connection',function(socket) {
         
         //  새로운 유닛
         socket.on('addUnit', function(x, y, sprite) {
-            socket.player.unitList[socket.lastUnit_id] = {
+            socket.player.unitList[socket.lastUnitId] = {
                 iid: socket.player.id,
-                id: socket.lastUnit_id,
+                id: socket.lastUnitId,
                 x: x,
                 y: y,
                 sprite: sprite
             }
-            io.emit('addUnit', socket.player.unitList[socket.lastUnit_id++]);
+            io.emit('addUnit', socket.player.unitList[socket.lastUnitId++]);
         })
 
         //  유닛 움직이기
-        socket.on('movUnit', function(player_id, id, x, y) {
-            let unit = socket.player.unitList[id];
-            unit.x += x;
-            unit.y += y;
-            io.emit('movUnit', player_id, id, unit);
+        socket.on('movUnit', function(playerId, unitId, x, y) {
+            let unit = socket.player.unitList[unitId];
+            unit.x = x;
+            unit.y = y;
+            io.emit('movUnit', playerId, unitId, unit);
         })
 
         //  연결 끊기

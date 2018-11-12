@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>닉네임 입력 창</title>
+    <style>
+        div{
+            width: 500px;
+            height: 400px;
+            margin: 0 auto;
+            border: 1px solid black;
+        }
+        h1{
+            text-align: center;
+        }
+        #name,#goButton{
+            display: block;
+            margin: 0 auto;
+            margin-top: 5px;
+        }
+        #name{
+            width: 200px;
+            height: 30px;
+            margin: 0 auto;
+            border: 1px solid black;
+            border-radius: 5px;
+            text-align: center;
+        }
+        #goButton{
+            cursor: pointer;
+            border: 0;
+            border-radius: 5px;
+            background: #34495e;
+            color: white;
+            width: 200px;
+            height: 30px;
+        }
+        #goButton:hover{
+            background: #2c3e50;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+    <h1>&lt;닉네임 입력 창&gt;</h1>
+    <br>
+    <input type="text" id="name" placeholder="닉네임을 입력하세요." onkeydown="keyEnter()">
+    <button id="goButton"  onclick="getNickName()">고고</button>
+    </div>
+
+
+    <script>
+        var nickName;
+        //nickName에 닉네임 저장
+        function getNickName() {
+            var input = document.getElementById('name').value;
+            nickName=input;
+            alert("nickName변수에 저장된 값은 : "+nickName); //저장되었는지 확인용
+        }
+
+        //엔터키로 버튼 누르기
+        function keyEnter() {
+            if (event.which || event.keyCode) {
+                if ((event.which == 13) || (event.keyCode == 13)) {
+                    document.getElementById('goButton').click();
+                    return false;
+                }
+            }
+            else {
+                return true;
+            }
+
+        }
+    </script>
+</body>
+
+</html>

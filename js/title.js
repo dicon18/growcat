@@ -1,4 +1,4 @@
-/// 게임 메인화면
+//  게임 메인화면
 var title = {
     create: function() {
         var bg_title = game.add.sprite(0, 0, 'bg_title');
