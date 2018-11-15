@@ -8,7 +8,7 @@ var Game = {
     init: function() {
         game.stage.disableVisibilityChange = true;
 
-        //  물리 설정
+        //  물리 / 그룹 설정
         game.physics.startSystem(Phaser.Physics.P2JS);
         var playerCollisionGroup = game.physics.p2.createCollisionGroup();
         var ballCollisionGroup = game.physics.p2.createCollisionGroup();
@@ -50,7 +50,7 @@ var Game = {
     //========================================================================================================================
 
     reqMovUnit: function() {
-        let player = this.playerList[this.myId];
+        let player = this.playerList[this.myId].player;
         let x = player.body.x + (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed;
         let y = player.body.y + (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed;
         Client.socket.emit('movUnit', this.myId, x, y);

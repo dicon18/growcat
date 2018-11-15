@@ -22,7 +22,7 @@ app.get('/',function(req, res) {
 //  서버 물리 설정
 var startTime = (new Date).getTime();
 var lastTime;
-var timeStep= 1/70; 
+var timeStep = 1 / 70; 
 
 var world = new p2.World({
     gravity : [0,0]
@@ -54,6 +54,9 @@ io.on('connection',function(socket) {
         world.addBody(newPlayer.playerBody);
         newPlayer.id = socket.id;
 
+        //  플레이어 리스트 추가
+        playerList[socket.id] = newPlayer;
+
         //  새로운 플레이어 정보
         var current_info = {
             id: newPlayer.id, 
@@ -63,35 +66,35 @@ io.on('connection',function(socket) {
             speed: newPlayer.speed
         };
 
-        //  플레이어 리스트 추가
-        playerList[socket.id] = newPlayer;
-
         //  나를 포함한 모든 플레이어 정보 가져오기
-        socket.emit('newPlayer', playerList, socket.id, false);
-        
+        for (let i in playerList) {
+            player = playerList[i];
+            var playerInfo = {
+                id: player.id,
+                x: player.x,
+                y: player.y,
+                sprite: player.sprite,
+                speed: player.speed
+            }
+            socket.emit('newPlayer', playerInfo, socket.id, false);
+        }
+
         //  나를 제외한 모든 소켓에게 나의 정보 전송
         socket.broadcast.emit('newPlayer', current_info, socket.id, true);
-
-        console.log('WELCOME ['+socket.id+'] :: CONTACT: ' + count());
-        function count() {
-            let count = 0;
-            for (let i in playerList) {
-                count++;
-            }
-            return count;
-        }
+        console.log('WELCOME ['+socket.id+'] :: CONTACT: ' + player_length());
 
         //  유닛 움직이기
         socket.on('movUnit', function(id, x, y) {
-            playerList[id].body.x = x;
-            playerList[id].body.y = y;
+            playerList[id].player.body.x = x;
+            playerList[id].player.body.y = y;
             io.emit('movUnit', playerList[id]);
         })
 
         //  연결 끊기
         socket.on('disconnect', function() {
+            delete playerList[socket.id];
             io.emit('disconnect', socket.id);
-            console.log('GOODBYE ['+socket.id+'] :: CONTACT: ' + playerList.length);
+            console.log('GOODBYE ['+socket.id+'] :: CONTACT: ' + player_length());
         })
     })
 })
@@ -100,6 +103,14 @@ io.on('connection',function(socket) {
 //  서버 함수
 //  2018.10.18 강준하
 //========================================================================================================================
+
+function player_length() {
+    let count = 0;
+    for (let i in playerList) {
+        count++;
+    }
+    return count;
+}
 
 //  플레이어 생성
 function Player (startX, startY, sprite, speed) {

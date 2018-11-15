@@ -11,7 +11,6 @@ Client.socket.connect('todak.me:80');
 //  게임 제어
 Client.socket.on('newPlayer', function(playerList, id, isBroadcast) {
     //  새로운 플레이어 생성
-    console.log(playerList);
     Client.newPlayer(playerList, id, isBroadcast);
 
     //  플레이어 이동
@@ -36,18 +35,11 @@ Client.socket.on('newPlayer', function(playerList, id, isBroadcast) {
 //========================================================================================================================
 
 Client.newPlayer = function(data, id, isBroadcast) {
-    for (let i in data) {
-        var newPlayer = new createPlayer(data.id, data.x, data.y, data.sprite); 
-        Game.playerList[data.id] = newPlayer;
-        //Game.playerList[newPlayer.id] = newPlayer;
-        console.log("@");
-    }
+    Game.playerList[data.id] = new createPlayer(data.id, data.x, data.y, data.sprite);
     if (isBroadcast == false) {
         Game.isConnected = true;
         Game.myId = id;
-        console.log("##");
     }
-    console.log("$$");
 }
 
 Client.movUnit = function(player) {
@@ -56,10 +48,9 @@ Client.movUnit = function(player) {
 }
 
 Client.removeUnit = function(playerId) {
-    for (let i in Game.playerList) {
-        Game.playerList[playerId].destroy();
-    }
-    delete Game.playerList[playerId]; 
+    console.log("@@");
+    // Game.playerList[playerId].player.destroy();
+    // delete Game.playerList[playerId]; 
 }
 
 Client.disconnect = function(playerId) {
@@ -69,14 +60,8 @@ Client.disconnect = function(playerId) {
 ///////////////////////////////////
 
 function createPlayer(id, startX, startY, sprite) {
-    this.id = id;
-    this.x = startX;
-    this.y = startY;
-    this.sprite = sprite
-
-	this.player = game.add.sprite(this.x , this.y, sprite);
-	this.player.anchor.setTo(0.5,0.5);
-	this.player.id = this.id;
-
+    this.player = game.add.sprite(startX , startY, sprite);
+    this.player.anchor.setTo(0.5,0.5);
+    this.player.id = id;
 	game.physics.p2.enableBody(this.player, true);
 }
