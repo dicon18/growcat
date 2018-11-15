@@ -30,6 +30,7 @@ Client.socket.on('newPlayer', function(playerId, data) {
 
     //  유닛 제거
     Client.socket.on('remove', function(playerId) {
+        console.log("@");
         Client.removeUnit(playerId);
         //TODO emit unit
     })

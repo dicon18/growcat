@@ -64,7 +64,8 @@ io.on('connection',function(socket) {
 
         //  연결 끊기
         socket.on('disconnect', function() {
-            io.emit('disconnect', socket.player.id);
+            console.log("@");
+            socket.broadcast.emit('remove', socket.player.id);
             console.log('GOODBYE ['+socket.player.id+'] :: CONTACT: ' + getAllPlayers().length);
         })
     })
