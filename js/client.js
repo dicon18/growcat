@@ -8,35 +8,25 @@ Client.socket.connect('todak.me:80');
 //  2018.10.18 강준하
 //========================================================================================================================
 
-//  플레이어 중도 참가
-Client.socket.on('addPlayer', function(data) {
-    Client.addPlayer(data);
-})
-
 //  게임 제어
-Client.socket.on('newPlayer', function(playerId, data) {
-    //  새로운 플레이어 설정
-    Client.newPlayer(playerId, data);
+Client.socket.on('newPlayer', function(playerList, id, isBroadcast) {
+    //  새로운 플레이어 생성
+    console.log(playerList);
+    Client.newPlayer(playerList, id, isBroadcast);
 
-    //  유닛 생성
-    Client.socket.on('addUnit', function(data, isBroadcast) {
-        Client.addUnit(data, isBroadcast);
+    //  플레이어 이동
+    Client.socket.on('movUnit', function(player) {
+        Client.movUnit(player);
     })
 
-    //  유닛 이동
-    Client.socket.on('movUnit', function(playerId, unitId, unit) {
-        Client.movUnit(playerId, unitId, unit);
-    })
-
-    //  유닛 제거
+    //  플레이어 제거
     Client.socket.on('remove', function(playerId) {
         Client.removeUnit(playerId);
-        //TODO emit unit
     })
     
     //  연결 끊김
-    Client.socket.on('disconnect', function(playerId) {
-        Client.disconnect(playerId);
+    Client.socket.on('disconnect', function(id) {
+        Client.disconnect(id);
     })
 })
 
@@ -45,45 +35,48 @@ Client.socket.on('newPlayer', function(playerId, data) {
 //  2018.10.18 강준하
 //========================================================================================================================
 
-Client.addPlayer = function(data) {
-    Game.players[data.id] = data;
-}
-
-Client.newPlayer = function(playerId, data) {
-    Game.id = playerId;
+Client.newPlayer = function(data, id, isBroadcast) {
     for (let i in data) {
-        Game.players[data[i].id] = data[i];
-        for (let j in data[i].unitList) {
-            this.addUnit(data[i].unitList[j]);
-        }
+        var newPlayer = new createPlayer(data.id, data.x, data.y, data.sprite); 
+        Game.playerList[data.id] = newPlayer;
+        //Game.playerList[newPlayer.id] = newPlayer;
+        console.log("@");
     }
-    Client.socket.emit('addUnit', irandom_range(0, CANVAS_WIDTH), irandom_range(0, CANVAS_HEIGHT), "spr_unit1");
-}
-
-Client.addUnit = function(data, isBroadcast) {
-    Game.players[data.iid].unitList[data.id] = game.add.sprite(data.x, data.y, data.sprite);
-    Game.players[data.iid].unitList[data.id].anchor.x = 0.5;
-    Game.players[data.iid].unitList[data.id].anchor.y = 0.5;
-    Game.players[data.iid].unitList[data.id].iid = Client.socket.id;
-    Game.players[data.iid].unitList[data.id].id = data.id;
-    game.physics.p2.enable(Game.players[data.iid].unitList[data.id], false);
     if (isBroadcast == false) {
         Game.isConnected = true;
+        Game.myId = id;
+        console.log("##");
     }
+    console.log("$$");
 }
 
-Client.movUnit = function(playerId, unitId, unit) {
-    Game.players[playerId].unitList[unitId].body.x = unit.x;
-    Game.players[playerId].unitList[unitId].body.y = unit.y;
+Client.movUnit = function(player) {
+    Game.playerList[player.id].body.x = player.body.x;
+    Game.playerList[player.id].body.y = player.body.y;
 }
 
 Client.removeUnit = function(playerId) {
-    for (let i in Game.players[playerId].unitList) {
-        Game.players[playerId].unitList[i].destroy();
+    for (let i in Game.playerList) {
+        Game.playerList[playerId].destroy();
     }
-    delete Game.players[playerId]; 
+    delete Game.playerList[playerId]; 
 }
 
 Client.disconnect = function(playerId) {
     this.removeUnit(playerId);
 }   
+
+///////////////////////////////////
+
+function createPlayer(id, startX, startY, sprite) {
+    this.id = id;
+    this.x = startX;
+    this.y = startY;
+    this.sprite = sprite
+
+	this.player = game.add.sprite(this.x , this.y, sprite);
+	this.player.anchor.setTo(0.5,0.5);
+	this.player.id = this.id;
+
+	game.physics.p2.enableBody(this.player, true);
+}

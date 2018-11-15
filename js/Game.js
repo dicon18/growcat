@@ -24,21 +24,19 @@ var Game = {
         this.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
         //  플레이어 관리
-        this.players = [];
-        
-        //  새로운 플레이어 요청
-        this.isConnected = false;
-        Client.socket.emit('newPlayer');
+        this.playerList = [];
 
         //  키보드 방향키 입력
         this.cursors = game.input.keyboard.createCursorKeys();
+
+        //  새로운 플레이어 요청
+        this.isConnected = false;
+        Client.socket.emit('newPlayer', {x: irandom_range(0, WORLD_WIDTH), y: irandom_range(0, WORLD_HEIGHT), sprite: "spr_unit1", speed: 200});
     },
 
     update: function() {
         if (this.isConnected) {
-            //console.log(this.players[this.id].unitList[0].x);
-            let unit = this.players[this.id].unitList[0];
-            this.reqMovUnit(unit);
+            //this.reqMovUnit();
         }
     },
 
@@ -51,10 +49,10 @@ var Game = {
     //  2018.10.18 강준하
     //========================================================================================================================
 
-    reqMovUnit: function(unit) {
-        let speed = 3;
-        let hspeed = unit.body.x + (this.cursors.right.isDown - this.cursors.left.isDown) * speed;
-        let vspeed = unit.body.y + (this.cursors.down.isDown - this.cursors.up.isDown) * speed;
-        Client.socket.emit('movUnit', this.id, unit.id, hspeed, vspeed);
+    reqMovUnit: function() {
+        let player = this.playerList[this.myId];
+        let x = player.body.x + (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed;
+        let y = player.body.y + (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed;
+        Client.socket.emit('movUnit', this.myId, x, y);
     }
 }
