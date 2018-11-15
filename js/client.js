@@ -24,8 +24,8 @@ Client.socket.on('newPlayer', function(playerId, data) {
     })
 
     //  유닛 이동
-    Client.socket.on('movUnit', function(playerId, unitId, ul) {
-        Client.movUnit(playerId, unitId, ul);
+    Client.socket.on('movUnit', function(playerId, unitId, unit) {
+        Client.movUnit(playerId, unitId, unit);
     })
 
     //  유닛 제거
@@ -66,14 +66,15 @@ Client.addUnit = function(data, isBroadcast) {
     Game.players[data.iid].unitList[data.id].anchor.y = 0.5;
     Game.players[data.iid].unitList[data.id].iid = Client.socket.id;
     Game.players[data.iid].unitList[data.id].id = data.id;
+    game.physics.p2.enable(Game.players[data.iid].unitList[data.id], false);
     if (isBroadcast == false) {
         Game.isConnected = true;
     }
 }
 
-Client.movUnit = function(playerId, unitId, ul) {
-    Game.players[playerId].unitList[unitId].x = ul.x;
-    Game.players[playerId].unitList[unitId].y = ul.y;
+Client.movUnit = function(playerId, unitId, unit) {
+    Game.players[playerId].unitList[unitId].body.x = unit.x;
+    Game.players[playerId].unitList[unitId].body.y = unit.y;
 }
 
 Client.removeUnit = function(playerId) {

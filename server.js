@@ -55,10 +55,10 @@ io.on('connection',function(socket) {
         })
 
         //  유닛 움직이기
-        socket.on('movUnit', function(playerId, unitId, x, y) {
+        socket.on('movUnit', function(playerId, unitId, hspeed, vspeed) {
             let unit = socket.player.unitList[unitId];
-            unit.x = x;
-            unit.y = y;
+            unit.x = hspeed;
+            unit.y = vspeed;
             io.emit('movUnit', playerId, unitId, unit);
         })
 

@@ -7,6 +7,13 @@ var Game = {
 
     init: function() {
         game.stage.disableVisibilityChange = true;
+
+        //  물리 설정
+        game.physics.startSystem(Phaser.Physics.P2JS);
+        var playerCollisionGroup = game.physics.p2.createCollisionGroup();
+        var ballCollisionGroup = game.physics.p2.createCollisionGroup();
+        var boxCollisionGroup = game.physics.p2.createCollisionGroup();
+        game.physics.p2.updateBoundsCollisionGroup();
     },
 
     create: function() {
@@ -46,8 +53,8 @@ var Game = {
 
     reqMovUnit: function(unit) {
         let speed = 3;
-        let hspeed = unit.x + (this.cursors.right.isDown - this.cursors.left.isDown) * speed;
-        let vspeed = unit.y + (this.cursors.down.isDown - this.cursors.up.isDown) * speed;
+        let hspeed = unit.body.x + (this.cursors.right.isDown - this.cursors.left.isDown) * speed;
+        let vspeed = unit.body.y + (this.cursors.down.isDown - this.cursors.up.isDown) * speed;
         Client.socket.emit('movUnit', this.id, unit.id, hspeed, vspeed);
     }
 }
