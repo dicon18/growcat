@@ -20,12 +20,8 @@ Client.socket.on('newPlayer', function(playerList, id, isBroadcast) {
 
     //  플레이어 제거
     Client.socket.on('remove', function(playerId) {
-        Client.removeUnit(playerId);
-    })
-    
-    //  연결 끊김
-    Client.socket.on('disconnect', function(id) {
-        Client.disconnect(id);
+        console.log("remove");
+        //Client.removeUnit(playerId);
     })
 })
 
@@ -35,6 +31,7 @@ Client.socket.on('newPlayer', function(playerList, id, isBroadcast) {
 //========================================================================================================================
 
 Client.newPlayer = function(data, id, isBroadcast) {
+    console.log("create");
     Game.playerList[data.id] = new createPlayer(data.id, data.x, data.y, data.sprite);
     if (isBroadcast == false) {
         Game.isConnected = true;
@@ -48,14 +45,10 @@ Client.movUnit = function(player) {
 }
 
 Client.removeUnit = function(playerId) {
-    console.log("@@");
-    // Game.playerList[playerId].player.destroy();
-    // delete Game.playerList[playerId]; 
+    Game.playerList[playerId].player.destroy();
+    delete Game.playerList[playerId]; 
+    console.log(playerId);
 }
-
-Client.disconnect = function(playerId) {
-    this.removeUnit(playerId);
-}   
 
 ///////////////////////////////////
 

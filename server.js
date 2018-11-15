@@ -93,7 +93,7 @@ io.on('connection',function(socket) {
         //  연결 끊기
         socket.on('disconnect', function() {
             delete playerList[socket.id];
-            io.emit('disconnect', socket.id);
+            socket.broadcast.emit('remove', socket.id);
             console.log('GOODBYE ['+socket.id+'] :: CONTACT: ' + player_length());
         })
     })
