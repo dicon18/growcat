@@ -13,31 +13,32 @@ var server = app.listen(80, function() {
     console.log('Listening on '+server.address().port);
 })
 
-//========================================================================================================================
-//  서버 함수
-//  2018.10.18 강준하
-//========================================================================================================================
-
-//  서버 물리 설정
-// var startTime = (new Date).getTime();
-// var lastTime;
-// var timeStep = 1 / 70; 
-
-// var world = new p2.World({
-//     gravity : [0,0]
-// });
-
-// function physics_hanlder() {
-// 	var currentTime = (new Date).getTime();
-// 	timeElapsed = currentTime - startTime;
-// 	var dt = lastTime ? (timeElapsed - lastTime) / 1000 : 0;
-//     dt = Math.min(1 / 10, dt);
-//     world.step(timeStep);
-// }
-// setInterval(physics_hanlder, 1000/60);
-
 //  플레이어 리스트
 var playerList = [];
+
+//========================================================================================================================
+//  서버 물리 초기화
+//  2018.11.17 강준하
+//========================================================================================================================
+
+var startTime = (new Date).getTime();
+var lastTime;
+var timeStep = 1 / 70; 
+ 
+var world = new p2.World({
+    gravity : [0,0]
+});
+
+function physics_hanlder() {
+	var currentTime = (new Date).getTime();
+	timeElapsed = currentTime - startTime;
+	var dt = lastTime ? (timeElapsed - lastTime) / 1000 : 0;
+    dt = Math.min(1 / 10, dt);
+    world.step(timeStep);
+}
+setInterval(physics_hanlder, 1000/60);
+
+//==========================================================
 
 //  플레이어 클래스
 var Player = function(startX, startY, sprite, speed) {
@@ -45,6 +46,7 @@ var Player = function(startX, startY, sprite, speed) {
     this.y = startY
     this.sprite = sprite
     this.speed = speed;
+    this.isSend = true;
 }
 
 //  새로운 플레이어
@@ -53,14 +55,14 @@ function onNewPlayer(data) {
     var newPlayer = new Player(data.x, data.y, data.sprite, data.speed);
     newPlayer.id = this.id;
     
-    // playerBody = new p2.Body ({
-    //     mass: 0,
-    //     position: [0,0],
-    //     fixedRotation: true
-    // });
-    // newPlayer.playerBody = playerBody;
-    // world.addBody(newPlayer.playerBody);
-    // newPlayer.id = socket.id;
+    //  서버 물리 적용
+    playerBody = new p2.Body ({
+        mass: 0,
+        position: [data.x, data.y],
+        fixedRotation: true
+    });
+    newPlayer.playerBody = playerBody;
+    world.addBody(newPlayer.playerBody);
 
     //  새로운 플레이어 정보
     var current_info = {
@@ -89,18 +91,6 @@ function onNewPlayer(data) {
     playerList.push(newPlayer);
 }
 
-function onMovePlayer(data) {
-    var movePlayer = find_playerID(this.id); 
-	movePlayer.x = data.x;
-	movePlayer.y = data.y;
-	var moveplayerData = {
-		id: movePlayer.id,
-		x: movePlayer.x,
-		y: movePlayer.y, 
-    }
-	this.broadcast.emit('move_oPlayer', moveplayerData);
-}
-
 //  연결 끊김
 function onDisconnect() {
     var removePlayer = find_playerID(this.id);
@@ -109,6 +99,29 @@ function onDisconnect() {
     }
     console.log("removing player " + this.id);
 	this.broadcast.emit('remove_player', {id: this.id});
+}
+
+function onInputFired(data) {
+    var movePlayer = find_playerID(this.id); 
+    if (!movePlayer || !movePlayer.isSend) {
+        return;
+    }
+    // setTimeout(function() {movePlayer.isSend = true}, 50);
+    // movePlayer.isSend = false;
+
+    movePlayer.playerBody.velocity[0] = data.hspd * movePlayer.speed;
+    movePlayer.playerBody.velocity[1] = data.vspd * movePlayer.speed;
+    var info = {
+		x: movePlayer.playerBody.position[0],
+		y: movePlayer.playerBody.position[1],
+    }
+    var movePlayerData = {
+        id: movePlayer.id,
+		x: movePlayer.playerBody.position[0],
+		y: movePlayer.playerBody.position[1]
+    }
+	this.emit("input_recieved", info);
+	this.broadcast.emit('move_oPlayer', movePlayerData);
 }
 
 //  플레이어 ID 찾기
@@ -131,6 +144,6 @@ var io = require('socket.io').listen(server);
 
 io.on('connection', function(socket) {
     socket.on('new_player', onNewPlayer);
-    socket.on('move_player', onMovePlayer);
     socket.on('disconnect', onDisconnect);
+    socket.on('input_fired', onInputFired);
 })

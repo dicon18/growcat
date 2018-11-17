@@ -9,7 +9,7 @@ function onConnected() {
     let startX = irandom_range(0, WORLD_WIDTH);
     let startY = irandom_range(0, WORLD_HEIGHT);
     let sprite = "spr_unit1";
-    let speed = 3;
+    let speed = 150;
     create_player(startX, startY, sprite, speed);
     socket.emit("new_player", {x: startX, y: startY, sprite: sprite, speed: speed});
 }
@@ -39,7 +39,7 @@ var Player = function(id, startX, startY, sprite, speed) {
     this.x = startX;
     this.y = startY;
     this.sprite = sprite;
-    this.spedd = speed;
+    this.speed = speed;
     this.player = game.add.sprite(this.x, this.y, this.sprite)
 
     this.player.anchor.setTo(0.5,0.5);
@@ -53,16 +53,25 @@ function onNewPlayer(data) {
     oPlayerList.push(new_player);
 }
 
+//  자기 자신 플레이어 위치 받기
+function onInputRecieved(data) {
+    player.body.x = data.x;
+    player.body.y = data.y;
+    console.log(player.body.velocity.x);
+    //player.body.fixedRotation = true;
+}
+
+//  외부 플레이어 플레이어 이동
 function onMovePlayer(data) {
     var movePlayer = find_playerID(data.id); 
 	if (!movePlayer) {
 		return;
 	}
-	movePlayer.player.body.x = data.x; 
-	movePlayer.player.body.y = data.y; 
-	movePlayer.player.angle = data.angle; 
+	movePlayer.body.x = data.x;
+    movePlayer.body.y = data.y;
 }
 
+//  플레이어 ID 찾기
 function find_playerID(id) {
     for (var i = 0; i < oPlayerList.length; i++) {
         if (oPlayerList[i].id == id) {
@@ -90,16 +99,19 @@ var Game = {
         this.cursors = game.input.keyboard.createCursorKeys();
         console.log("Client started");
         socket.on("connect", onConnected);
-        socket.on("new_oPlayer", onNewPlayer);
-        socket.on("move_oPlayer", onMovePlayer);
         socket.on("remove_player", onRemovePlayer);
+        socket.on("new_oPlayer", onNewPlayer);
+        socket.on("input_recieved", onInputRecieved);
+        socket.on("move_oPlayer", onMovePlayer);
     },
 
     update: function() {
         if (isConnected) {
-            player.body.x += (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed;
-            player.body.y += (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed;
-            socket.emit('move_player', {x: player.body.x, y: player.body.y});
+            //  움직이기
+            socket.emit("input_fired", {
+                hspd: this.cursors.right.isDown - this.cursors.left.isDown,
+                vspd: this.cursors.down.isDown - this.cursors.up.isDown
+            });
         }
     },
 
