@@ -49,11 +49,10 @@ var Player = function(startX, startY, sprite, speed) {
 
 //  새로운 플레이어
 function onNewPlayer(data) {
-    console.log(data);
-    var newPlayer = new Player(data.x, data.y, data.sprite, data.speed);
-    console.log(newPlayer);
     console.log("created new player with id " + this.id);
+    var newPlayer = new Player(data.x, data.y, data.sprite, data.speed);
     newPlayer.id = this.id;
+    
     // playerBody = new p2.Body ({
     //     mass: 0,
     //     position: [0,0],
@@ -82,7 +81,6 @@ function onNewPlayer(data) {
             sprite: existPlayer.sprite,
             speed: existPlayer.speed
         };
-        console.log("pushing player");
         this.emit('new_oPlayer', player_info);
     }
 
@@ -91,9 +89,20 @@ function onNewPlayer(data) {
     playerList.push(newPlayer);
 }
 
+function onMovePlayer(data) {
+    var movePlayer = find_playerID(this.id); 
+	movePlayer.x = data.x;
+	movePlayer.y = data.y;
+	var moveplayerData = {
+		id: movePlayer.id,
+		x: movePlayer.x,
+		y: movePlayer.y, 
+    }
+	this.broadcast.emit('move_oPlayer', moveplayerData);
+}
+
 //  연결 끊김
 function onDisconnect() {
-    console.log("disconnect");
     var removePlayer = find_playerID(this.id);
     if (removePlayer) {
         playerList.splice(playerList.indexOf(removePlayer), 1);
@@ -121,8 +130,7 @@ function find_playerID(id) {
 var io = require('socket.io').listen(server);
 
 io.on('connection', function(socket) {
-    console.log("socket connected");
-    socket.on('disconnect', onDisconnect);
     socket.on('new_player', onNewPlayer);
-    //socket.on('move_player', movePlayer);
+    socket.on('move_player', onMovePlayer);
+    socket.on('disconnect', onDisconnect);
 })
