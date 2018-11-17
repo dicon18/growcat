@@ -1,58 +1,91 @@
-//  게임 클라이언트
+var socket;     
+var isConnected = false;
+var oPlayerList = [];
+
+//  접속 완료
+function onConnected() {
+    console.log("Connected to server");
+    create_player();
+    isConnected = true;
+    socket.emit("new_player", {x: irandom_range(0, WORLD_WIDTH), y: irandom_range(0, WORLD_HEIGHT), sprite: "spr_unit1", speed: 150});
+}
+
+//  플레이어 제거
+function onRemovePlayer(data) {
+    var removePlayer = find_playerID(data.id);
+	if (!removePlayer) {
+		console.log("Player not found: ", data.id)
+		return;
+	}
+	removePlayer.player.destroy();
+	oPlayerList.splice(oPlayerList.indexOf(removePlayer), 1);
+}
+
+//  플레이어 클래스
+var Player = function(id, startX, startY, sprite, speed) {
+    this.id = id;
+    this.x = startX;
+    this.y = startY;
+    this.sprite = sprite;
+    this.spedd = speed;
+    this.player = game.add.sprite(this.x, this.y, this.sprite)
+
+    this.player.anchor.setTo(0.5,0.5);
+    //game.physics.p2.enableBody(this.player, true);
+}
+
+//  자기 자신 플레이어 생성
+function create_player () {
+    player = game.add.sprite(0, 0, "spr_unit1");
+    player.anchor.setTo(0.5,0.5);
+    //game.physics.p2.enableBody(player, true);
+}
+
+//  외부 플레이어 생성
+function onNewPlayer(data) {
+    console.log(data);
+    var new_player = new Player(data.id, data.x, data.y, data.sprite, data.speed);
+    oPlayerList.push(new_player);
+}
+
+function find_playerID(id) {
+    for (var i = 0; i < oPlayerList.length; i++) {
+        if (oPlayerList[i].id == id) {
+            return oPlayerList[i]; 
+        }
+    }
+}
+
 var Game = {
-    //========================================================================================================================
-    //  게임 이벤트
-    //  2018.10.18 강준하
-    //========================================================================================================================
-
     init: function() {
-        game.stage.disableVisibilityChange = true;
+        socket = io();
+        socket.connect('todak.me:80');
 
-        //  물리 / 그룹 설정
+        game.stage.disableVisibilityChange = true;
+        game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
+        game.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT, false, false, false, false);
         game.physics.startSystem(Phaser.Physics.P2JS);
-        var playerCollisionGroup = game.physics.p2.createCollisionGroup();
-        var ballCollisionGroup = game.physics.p2.createCollisionGroup();
-        var boxCollisionGroup = game.physics.p2.createCollisionGroup();
-        game.physics.p2.updateBoundsCollisionGroup();
+        game.physics.p2.setBoundsToWorld(false, false, false, false, false)
+        game.physics.p2.gravity.y = 0;
+        game.physics.p2.applyGravity = false; 
+        game.physics.p2.enableBody(game.physics.p2.walls, false);
     },
 
     create: function() {
-        //  타일셋
         this.background = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'bg_game');
-
-        //  월드 크기
-        this.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
-
-        //  플레이어 관리
-        this.playerList = [];
-
-        //  키보드 방향키 입력
         this.cursors = game.input.keyboard.createCursorKeys();
-
-        //  새로운 플레이어 요청
-        this.isConnected = false;
-        Client.socket.emit('newPlayer', {x: irandom_range(0, WORLD_WIDTH), y: irandom_range(0, WORLD_HEIGHT), sprite: "spr_unit1", speed: 200});
+        console.log("Client started");
+        socket.on("connect", onConnected);
+        socket.on("new_oPlayer", onNewPlayer);
+        socket.on("remove_player", onRemovePlayer);
     },
 
     update: function() {
-        if (this.isConnected) {
-            //this.reqMovUnit();
+        if (isConnected) {
+            //Mov
         }
     },
 
     render: function() {
-
-    },
-
-    //========================================================================================================================
-    //  게임 함수
-    //  2018.10.18 강준하
-    //========================================================================================================================
-
-    reqMovUnit: function() {
-        let player = this.playerList[this.myId].player;
-        let x = player.body.x + (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed;
-        let y = player.body.y + (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed;
-        Client.socket.emit('movUnit', this.myId, x, y);
     }
 }
