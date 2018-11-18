@@ -16,7 +16,7 @@ var server = app.listen(80, function() {
 //  플레이어 리스트
 var playerList = [];
 
-//  실시간 물리 설정
+//  실시간 물리 적용
 var startTime = (new Date).getTime();
 var lastTime;
 var timeStep = 1 / 70; 
@@ -53,7 +53,8 @@ function onNewPlayer(data) {
         position: [newPlayer.x, newPlayer.y],
         angle: 0,
         velocity: [0, 0],
-        angularVelocity: 0
+        angularVelocity: 0,
+        fixedRotation: true
     });
     playerBody.addShape(new p2.Box({ width: 100, height: 100 }));
 
@@ -70,7 +71,7 @@ function onNewPlayer(data) {
     }
 
     //  접속된 플레이어 정보 가져오기
-    for (let i = 0; i < playerList.length; i++) {
+    for (var i = 0; i < playerList.length; i++) {
         existPlayer = playerList[i];
         var player_info = {
             id: existPlayer.id,
@@ -105,10 +106,12 @@ function onInputFired(data) {
     if (!movePlayer || !movePlayer.isInputDelay) {
         return;
     }
+
     //  입력 지연
     // setTimeout(function() {movePlayer.isInputDelay = true}, 50);
     // movePlayer.isInputDelay = false;
 
+    //  플레이어 이동
     movePlayer.playerBody.velocity[0] = data.hspd;
     movePlayer.playerBody.velocity[1] = data.vspd;
     var info = {
@@ -127,7 +130,7 @@ function onInputFired(data) {
 
 //  플레이어 ID 찾기
 function find_playerID(id) {
-	for (let i = 0; i < playerList.length; i++) {
+	for (var i = 0; i < playerList.length; i++) {
 		if (playerList[i].id == id) {
 			return playerList[i]; 
 		}

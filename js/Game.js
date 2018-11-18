@@ -5,10 +5,10 @@ var oPlayerList = [];
 //  접속 완료
 function onConnected() {
     isConnected = true;
-    let startX = irandom_range(0, WORLD_WIDTH);
-    let startY = irandom_range(0, WORLD_HEIGHT);
-    let sprite = "spr_unit1";
-    let speed = 150;
+    var startX = irandom_range(0, WORLD_WIDTH);
+    var startY = irandom_range(0, WORLD_HEIGHT);
+    var sprite = "spr_unit1";
+    var speed = 150;
     create_player(startX, startY, sprite, speed);
     socket.emit("new_player", { x: startX, y: startY, sprite: sprite, speed: speed });
 
@@ -29,8 +29,7 @@ function onRemovePlayer(data) {
 function create_player (x, y, sprite, speed) {
     player = game.add.sprite(x, y, sprite, speed);
     player.anchor.setTo(0.5,0.5);
-    game.physics.p2.enableBody(player, true);
-    player.body.fixedRotation = true;
+
     player.speed = speed;
 }
 
@@ -41,11 +40,9 @@ var Player = function(id, startX, startY, sprite, speed) {
     this.y = startY;
     this.sprite = sprite;
     this.speed = speed;
-    this.player = game.add.sprite(this.x, this.y, this.sprite)
 
+    this.player = game.add.sprite(this.x, this.y, this.sprite)
     this.player.anchor.setTo(0.5,0.5);
-    game.physics.p2.enableBody(this.player, true);
-    this.player.body.fixedRotation = true;
 }
 
 //  외부 플레이어 생성
@@ -56,9 +53,8 @@ function onNewPlayer(data) {
 
 //  내 플레이어 위치 받기
 function onInputRecieved(data) {
-    player.body.setZeroVelocity();
-    player.body.x = data.x;
-    player.body.y = data.y;
+    player.x = data.x;
+    player.y = data.y;
 }
 
 //  외부 플레이어 이동
@@ -67,9 +63,8 @@ function onMovePlayer(data) {
 	if (!movePlayer) {
 		return;
     }
-    movePlayer.player.body.setZeroVelocity();
-	movePlayer.player.body.x = data.x;
-    movePlayer.player.body.y = data.y;
+	movePlayer.player.x = data.x;
+    movePlayer.player.y = data.y;
 }
 
 //  플레이어 ID 찾기
@@ -87,18 +82,12 @@ var Game = {
         socket.connect('todak.me:80');
 
         game.stage.disableVisibilityChange = true;
-        //game.scale.scaleMode = Phaser.ScaleManager.RESIZE;
-        game.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT, false, false, false, false);
-        game.physics.startSystem(Phaser.Physics.P2JS);
-        game.physics.p2.setBoundsToWorld(false, false, false, false, false)
-        game.physics.p2.gravity.y = 0;
-        game.physics.p2.applyGravity = false; 
-        game.physics.p2.setImpactEvents(true);
     },
 
     create: function() {
         this.background = this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, 'bg_game');
         this.cursors = game.input.keyboard.createCursorKeys();
+        
         socket.on("connect", onConnected);
         socket.on("remove_player", onRemovePlayer);
         socket.on("new_oPlayer", onNewPlayer);
