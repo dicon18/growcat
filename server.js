@@ -16,15 +16,10 @@ var server = app.listen(80, function() {
 //  플레이어 리스트
 var playerList = [];
 
-//========================================================================================================================
-//  서버 물리 초기화
-//  2018.11.17 강준하
-//========================================================================================================================
-
+//  서버 물리 설정
 var startTime = (new Date).getTime();
 var lastTime;
 var timeStep = 1 / 70; 
- 
 var world = new p2.World({
     gravity : [0,0]
 });
@@ -37,8 +32,6 @@ function physics_hanlder() {
     world.step(timeStep);
 }
 setInterval(physics_hanlder, 1000/60);
-
-//==========================================================
 
 //  플레이어 클래스
 var Player = function(startX, startY, sprite, speed) {
@@ -55,12 +48,15 @@ function onNewPlayer(data) {
     var newPlayer = new Player(data.x, data.y, data.sprite, data.speed);
     newPlayer.id = this.id;
     
-    //  서버 물리 적용
+    //  플레이어 물리 적용
     playerBody = new p2.Body ({
-        mass: 0,
+        mass: 1,
         position: [data.x, data.y],
-        fixedRotation: true
+        angle: 0,
+        velocity: [0, 0],
+        angularVelocity: 0
     });
+    playerBody.addShape(new p2.Circle({ radius: 30 }));
     newPlayer.playerBody = playerBody;
     world.addBody(newPlayer.playerBody);
 
@@ -78,14 +74,14 @@ function onNewPlayer(data) {
         existPlayer = playerList[i];
         var player_info = {
             id: existPlayer.id,
-            x: existPlayer.x,
-            y: existPlayer.y,
+            x: existPlayer.playerBody.position[0],
+            y: existPlayer.playerBody.position[1],
             sprite: existPlayer.sprite,
             speed: existPlayer.speed
         };
         this.emit('new_oPlayer', player_info);
     }
-
+    //console.log(newPlayer.playerBody);
     //  나를 제외한 모든 소켓에게 나의 정보 전송
     this.broadcast.emit('new_oPlayer', current_info);
     playerList.push(newPlayer);
@@ -93,7 +89,7 @@ function onNewPlayer(data) {
 
 //  연결 끊김
 function onDisconnect() {
-    var removePlayer = find_playerID(this.id);
+    var removePlayer = find_playerID(this.id, this.room);
     if (removePlayer) {
         playerList.splice(playerList.indexOf(removePlayer), 1);
     }
@@ -106,19 +102,23 @@ function onInputFired(data) {
     if (!movePlayer || !movePlayer.isSend) {
         return;
     }
-    // setTimeout(function() {movePlayer.isSend = true}, 50);
-    // movePlayer.isSend = false;
+    for (let i = 0; i < playerList.length; i++) {
+        console.log(playerList[i].playerBody.position+"    |    "+playerList[i].playerBody.velocity);
+    }
+    console.log("==========");
+    setTimeout(function() {movePlayer.isSend = true}, 50);
+    movePlayer.isSend = false;
 
-    movePlayer.playerBody.velocity[0] = data.hspd * movePlayer.speed;
-    movePlayer.playerBody.velocity[1] = data.vspd * movePlayer.speed;
+    movePlayer.playerBody.velocity[0] = data.hspd;
+    movePlayer.playerBody.velocity[1] = data.vspd;
     var info = {
-		x: movePlayer.playerBody.position[0],
-		y: movePlayer.playerBody.position[1],
+		hspd: movePlayer.playerBody.position[0],
+		vspd: movePlayer.playerBody.position[1]
     }
     var movePlayerData = {
         id: movePlayer.id,
-		x: movePlayer.playerBody.position[0],
-		y: movePlayer.playerBody.position[1]
+		hspd: movePlayer.playerBody.position[0],
+		vspd: movePlayer.playerBody.position[1]
     }
 	this.emit("input_recieved", info);
 	this.broadcast.emit('move_oPlayer', movePlayerData);
