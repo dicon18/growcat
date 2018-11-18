@@ -1,6 +1,6 @@
 // 환경 변수
-const CANVAS_WIDTH = window.innerWidth * window.devicePixelRatio;
-const CANVAS_HEIGHT = window.innerHeight * window.devicePixelRatio;
+const CANVAS_WIDTH = 1280;
+const CANVAS_HEIGHT = 720;
 const WORLD_WIDTH = 1280;
 const WORLD_HEIGHT = 720;
 
