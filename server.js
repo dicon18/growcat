@@ -1,8 +1,8 @@
 /// 게임 서버
 var express = require('express');
 var p2 = require('p2');
-
 var app = express();
+
 app.use('/js',express.static(__dirname + '/js'));
 app.use('/assets',express.static(__dirname + '/assets'));
 app.get('/',function(req, res) {
@@ -16,7 +16,7 @@ var server = app.listen(80, function() {
 //  플레이어 리스트
 var playerList = [];
 
-//  서버 물리 설정
+//  실시간 물리 설정
 var startTime = (new Date).getTime();
 var lastTime;
 var timeStep = 1 / 70; 
@@ -34,33 +34,33 @@ function physics_hanlder() {
 setInterval(physics_hanlder, 1000/60);
 
 //  플레이어 클래스
-var Player = function(startX, startY, sprite, speed) {
+var Player = function(id, startX, startY, sprite, speed) {
+    this.id = id;
     this.x = startX
     this.y = startY
     this.sprite = sprite
     this.speed = speed;
-    this.isSend = true;
+    this.isInputDelay = true;
 }
 
 //  새로운 플레이어
 function onNewPlayer(data) {
-    console.log("created new player with id " + this.id);
-    var newPlayer = new Player(data.x, data.y, data.sprite, data.speed);
-    newPlayer.id = this.id;
-    
+    var newPlayer = new Player(this.id, data.x, data.y, data.sprite, data.speed);
+
     //  플레이어 물리 적용
-    playerBody = new p2.Body ({
+    playerBody = new p2.Body({
         mass: 1,
-        position: [data.x, data.y],
+        position: [newPlayer.x, newPlayer.y],
         angle: 0,
         velocity: [0, 0],
         angularVelocity: 0
     });
-    playerBody.addShape(new p2.Circle({ radius: 30 }));
+    playerBody.addShape(new p2.Box({ width: 100, height: 100 }));
+
     newPlayer.playerBody = playerBody;
     world.addBody(newPlayer.playerBody);
 
-    //  새로운 플레이어 정보
+    //  플레이어 정보
     var current_info = {
         id: newPlayer.id, 
         x: newPlayer.x,
@@ -81,10 +81,12 @@ function onNewPlayer(data) {
         };
         this.emit('new_oPlayer', player_info);
     }
-    //console.log(newPlayer.playerBody);
+
     //  나를 제외한 모든 소켓에게 나의 정보 전송
     this.broadcast.emit('new_oPlayer', current_info);
     playerList.push(newPlayer);
+
+    console.log("created new player with id " + this.id);
 }
 
 //  연결 끊김
@@ -93,33 +95,32 @@ function onDisconnect() {
     if (removePlayer) {
         playerList.splice(playerList.indexOf(removePlayer), 1);
     }
+    this.broadcast.emit('remove_player', { id: this.id });
+    
     console.log("removing player " + this.id);
-	this.broadcast.emit('remove_player', {id: this.id});
 }
 
 function onInputFired(data) {
     var movePlayer = find_playerID(this.id); 
-    if (!movePlayer || !movePlayer.isSend) {
+    if (!movePlayer || !movePlayer.isInputDelay) {
         return;
     }
-    for (let i = 0; i < playerList.length; i++) {
-        console.log(playerList[i].playerBody.position+"    |    "+playerList[i].playerBody.velocity);
-    }
-    console.log("==========");
-    setTimeout(function() {movePlayer.isSend = true}, 50);
-    movePlayer.isSend = false;
+    //  입력 지연
+    // setTimeout(function() {movePlayer.isInputDelay = true}, 50);
+    // movePlayer.isInputDelay = false;
 
     movePlayer.playerBody.velocity[0] = data.hspd;
     movePlayer.playerBody.velocity[1] = data.vspd;
     var info = {
-		hspd: movePlayer.playerBody.position[0],
-		vspd: movePlayer.playerBody.position[1]
+		x: movePlayer.playerBody.position[0],
+		y: movePlayer.playerBody.position[1]
     }
     var movePlayerData = {
         id: movePlayer.id,
-		hspd: movePlayer.playerBody.position[0],
-		vspd: movePlayer.playerBody.position[1]
+		x: movePlayer.playerBody.position[0],
+		y: movePlayer.playerBody.position[1]
     }
+
 	this.emit("input_recieved", info);
 	this.broadcast.emit('move_oPlayer', movePlayerData);
 }
@@ -133,11 +134,6 @@ function find_playerID(id) {
 	}
 	return false; 
 }
-
-//========================================================================================================================
-//  서버 제어
-//  2018.10.18 강준하
-//========================================================================================================================
 
 //  소켓 측
 var io = require('socket.io').listen(server);
