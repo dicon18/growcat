@@ -108,8 +108,8 @@ function onInputFired(data) {
     }
 
     //  입력 지연
-    // setTimeout(function() {movePlayer.isInputDelay = true}, 50);
-    // movePlayer.isInputDelay = false;
+    setTimeout(function() {movePlayer.isInputDelay = true}, 50);
+    movePlayer.isInputDelay = false;
 
     //  플레이어 이동
     movePlayer.playerBody.velocity[0] = data.hspd;

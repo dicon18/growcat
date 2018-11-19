@@ -100,10 +100,14 @@ var Game = {
     update: function() {
         if (isConnected) {
             //  움직이기
-            socket.emit("input_fired", {
-                hspd: (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed,
-                vspd: (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed
-            });
+            var hspd = (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed;
+            var vspd = (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed;            
+            if (hspd != 0 || vspd != 0) {
+                socket.emit("input_fired", {
+                    hspd: hspd,
+                    vspd: vspd 
+                });
+            }
         }
     },
 
