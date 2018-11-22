@@ -40,6 +40,7 @@ var Player = function(id, startX, startY, sprite, speed) {
     this.y = startY
     this.sprite = sprite
     this.speed = speed;
+    
     this.isInputDelay = true;
 }
 
@@ -106,9 +107,8 @@ function onInputFired(data) {
     if (!movePlayer || !movePlayer.isInputDelay) {
         return;
     }
-
     //  입력 지연
-    setTimeout(function() {movePlayer.isInputDelay = true}, 50);
+    setTimeout(function() { movePlayer.isInputDelay = true }, 50);
     movePlayer.isInputDelay = false;
 
     //  플레이어 이동

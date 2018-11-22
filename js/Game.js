@@ -26,7 +26,7 @@ function onRemovePlayer(data) {
 }
 
 //  내 플레이어 생성
-function create_player (x, y, sprite, speed) {
+function create_player(x, y, sprite, speed) {
     player = game.add.sprite(x, y, sprite, speed);
     player.anchor.setTo(0.5,0.5);
 
@@ -82,6 +82,7 @@ var Game = {
         socket.connect('todak.me:80');
 
         game.stage.disableVisibilityChange = true;
+        game.time.advancedTiming = true;
     },
 
     create: function() {
@@ -100,17 +101,14 @@ var Game = {
     update: function() {
         if (isConnected) {
             //  움직이기
-            var hspd = (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed;
-            var vspd = (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed;            
-            if (hspd != 0 || vspd != 0) {
-                socket.emit("input_fired", {
-                    hspd: hspd,
-                    vspd: vspd 
-                });
-            }
+            socket.emit("input_fired", {
+                hspd: (this.cursors.right.isDown - this.cursors.left.isDown) * player.speed,
+                vspd: (this.cursors.down.isDown - this.cursors.up.isDown) * player.speed 
+            });
         }
     },
 
     render: function() {
+        game.debug.text('FPS: ' + game.time.fps || 'FPS: --', 40, 40, "#00ff00");
     }
 }
